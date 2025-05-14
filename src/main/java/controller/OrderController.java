@@ -24,6 +24,10 @@ public class OrderController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if (userLogging == null) {
+            resp.sendRedirect("login.jsp"); // hoặc trang chính
+            return;
+        }
         String action = req.getParameter("action");
         if(action==null) {
             ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitOfAndBy(userLogging.getId(), Constant.WAITING);

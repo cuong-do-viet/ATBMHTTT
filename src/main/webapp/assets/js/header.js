@@ -236,3 +236,15 @@ function logout(event) {
         }
     });
 }
+function toggleNotificationPanel() {
+    const panel = document.getElementById("notification-panel");
+    panel.style.display = (panel.style.display === "block") ? "none" : "block";
+}
+
+window.addEventListener('click', function(e) {
+    const panel = document.getElementById("notification-panel");
+    const icon = document.querySelector('.notification-icon');
+    if (!icon.contains(e.target) && !panel.contains(e.target)) {
+        panel.style.display = "none";
+    }
+});

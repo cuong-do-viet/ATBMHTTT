@@ -65,6 +65,7 @@
                 <i class="bi bi-cart3"></i>
                 <p>Giỏ hàng</p>
             </div>
+
             <%
                 } else {
             %>
@@ -80,6 +81,13 @@
                 //     event
                 // }
             </script>
+
+            <!-- Thông báo -->
+            <div class="notification flex-roww" onclick="toggleNotificationPanel()">
+                <i class="bi bi-bell"></i>
+                <p> Thông báo</p>
+                <span class="notification-count" id="notification-count"></span>
+            </div>
 
             <div class="user flex-roww">
                 <i class="bi bi-person"></i>

@@ -29,8 +29,20 @@
     justify-content: space-between;
 }
 
+.notification-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: red;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+}
+
 .user,
-.cart {
+.cart,
+.notification{
     text-decoration: none;
     color: black;
     width: fit-content;
@@ -39,7 +51,8 @@
 }
 
 .user:hover,
-.cart:hover {
+.cart:hover,
+.notification:hover{
     cursor: pointer;
     background-color: var(--hover-color);
     border-radius: 25px;
@@ -48,7 +61,8 @@
 }
 
 .user p,
-.cart p {
+.cart p,
+.notification p{
     margin-left: 5px;
 }
 
@@ -356,4 +370,3 @@
 .modal-login-require.active {
     display: block;
 }
-

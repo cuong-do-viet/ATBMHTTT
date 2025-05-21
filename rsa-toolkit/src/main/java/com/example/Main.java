@@ -1,3 +1,5 @@
+package com.example;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -37,7 +39,7 @@ public class Main {
     private final KeyFactory keyFactory;
     private PublicKey publicKey;
     private PrivateKey privateKey;
-    private Integer[] availableKeySize = {1024, 2048, 4096};
+    private final Integer[] availableKeySize = {1024, 2048, 4096};
     private int selectedKeySizeIndex = 0;
 
     private final String START_RSA_PUBLIC_STRING = "-----BEGIN PUBLIC KEY-----";
@@ -132,9 +134,7 @@ public class Main {
         frame.getContentPane().add(panel, BorderLayout.CENTER);
 
         // EVENTS
-        keySizeBox.addItemListener((e -> {
-            selectedKeySizeIndex = keySizeBox.getSelectedIndex();
-        }));
+        keySizeBox.addItemListener((e -> selectedKeySizeIndex = keySizeBox.getSelectedIndex()));
         generateBtn.addActionListener((e -> {
             generateKeyPair();
             status.setText(String.format("Generated Key Pair of size %d bits at %s", availableKeySize[selectedKeySizeIndex], sdf.format(new Date())));

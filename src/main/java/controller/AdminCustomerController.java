@@ -1,9 +1,6 @@
 package controller;
 
-import DAO.BrandDAO;
-import DAO.ImageDAO;
-import DAO.ProductUnitDAO;
-import DAO.UserDAO;
+import DAO.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,8 +14,13 @@ import model.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Random;
 
@@ -143,6 +145,44 @@ public class AdminCustomerController extends HttpServlet {
 
                 if(re==1) {
                     String html = htmlSuccessToast("Cấp mật khẩu mới thành công!");
+                    resp.getWriter().write(html);
+                }
+                break;
+            }
+            case "ISSUEKEY": {
+                System.out.println("issue new keypair");
+                int id = Integer.parseInt(req.getParameter("id"));
+                User user = UserDAO.getInstance().selectById(id);
+
+                try {
+                    // Tạo cặp khóa RSA
+                    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                    keyGen.initialize(2048); // hoặc 4096 cho bảo mật cao hơn
+                    KeyPair keyPair = keyGen.generateKeyPair();
+                    PublicKey publicKey = keyPair.getPublic();
+                    PrivateKey privateKey = keyPair.getPrivate();
+
+                    // Mã hóa public key sang base64 để lưu vào DB
+                    String publicKeyStr = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+                    String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+
+                    // Cập nhật hoặc thêm mới public key trong DB
+                    PublicKeyDAO.getInstance().updateOrInsert(id, publicKeyStr);
+
+                    /*
+                    Xử lí với private key?
+                    String email = user.getEmail();
+                    String subject = "Your New Private Key";
+                    String message = "Here is your new private key:\n\n" + privateKeyStr + "\n\nKeep it safe and do not share it.";
+                    EmailUtil.sendMail(email, subject, message);
+                     */
+
+                    String html = htmlSuccessToast("Tạo lại khóa thành công!");
+                    resp.getWriter().write(html);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    String html = htmlErrorToast("Lỗi khi tạo lại khóa: " + e.getMessage());
                     resp.getWriter().write(html);
                 }
                 break;

@@ -158,6 +158,7 @@
                                         <option class="lock-option" value="lock">Khóa</option>
                                         <option class="unlock-option" value="unlock">Mở khóa</option>
                                         <option value="issuePassword">Cấp mật khẩu</option>
+                                        <option value="issueKey">Cấp lại khóa</option>
                                         <option value="delete">Xóa</option>
                                     </select>
                                 </td>
@@ -313,6 +314,25 @@
                         var name = group.querySelector(".name").innerText;
                         var id = group.querySelector(".id").innerText;
                         setupConfirm(id,'#delete-confirm-modal',name);
+                        break;
+                    }
+                    case "ISSUEKEY": {  // Thêm trường hợp này để xử lý action "Cấp lại khóa"
+                        setInfosStatus(group, false);
+                        var id = group.querySelector(".id").innerText;
+                        // Gửi yêu cầu AJAX để cấp lại khóa
+                        $.ajax({
+                            type: "POST",
+                            url: "admincustomer?action=issueKey",  // Đảm bảo URL đúng
+                            data: {id: id},
+                            success: function(data) {
+                                // Xử lý phản hồi từ server
+                                alert('Cấp lại khóa thành công!');
+                                // Có thể hiển thị toast hay thông báo tại đây
+                            },
+                            error: function(error) {
+                                alert('Lỗi khi cấp lại khóa: ' + error.responseText);
+                            }
+                        });
                         break;
                     }
                     case "UPDATEDETAIL" : {

@@ -236,15 +236,100 @@ function logout(event) {
         }
     });
 }
-function toggleNotificationPanel() {
-    const panel = document.getElementById("notification-panel");
-    panel.style.display = (panel.style.display === "block") ? "none" : "block";
+
+function toggleNotificationPanel(event) {
+    console.log("toggleNotificationPanel called");
+    event.preventDefault();
+    event.stopPropagation();
+
+    const modal = document.querySelector('.notification-modal');
+    console.log("Modal element:", modal);
+
+    if (!modal) {
+        console.error("Notification modal not found");
+        return;
+    }
+
+    console.log("Modal classes before:", modal.className);
+    if (modal.classList.contains('active')) {
+        modal.classList.remove('active');
+    } else {
+        modal.classList.add('active');
+        console.log("Modal classes after:", modal.className);
+        loadNotificationList();
+    }
 }
 
-window.addEventListener('click', function(e) {
-    const panel = document.getElementById("notification-panel");
-    const icon = document.querySelector('.notification-icon');
-    if (!icon.contains(e.target) && !panel.contains(e.target)) {
-        panel.style.display = "none";
+function loadNotificationList() {
+    console.log("Loading notification list...");
+
+    const sampleNotifications = `
+        <div class="notification-item" style="padding: 15px; border-bottom: 1px solid #eee;">
+            <p style="margin: 0; font-weight: 500;">Đơn hàng #12345 đã được xác nhận</p>
+            <small style="color: #666;">2 giờ trước</small>
+        </div>
+        <div class="notification-item" style="padding: 15px; border-bottom: 1px solid #eee;">
+            <p style="margin: 0; font-weight: 500;">Khuyến mãi iPhone 15 giảm 20%</p>
+            <small style="color: #666;">1 ngày trước</small>
+        </div>
+        <div class="notification-item" style="padding: 15px;">
+            <p style="margin: 0; font-weight: 500;">Chào mừng bạn đến với Thietbididong.com</p>
+            <small style="color: #666;">3 ngày trước</small>
+        </div>
+        <div class="notification-item" style="padding: 15px; border-bottom: 1px solid #eee;">
+            <p style="margin: 0; font-weight: 500;">Sản phẩm Samsung Galaxy S24 đã có hàng</p>
+            <small style="color: #666;">1 tuần trước</small>
+        </div>
+    `;
+
+    $('#notification-container').html(sampleNotifications);
+
+    $.ajax({
+        type: "GET",
+        url: "profile",
+        data: { action: "getNotifications" },
+        success: function(data) {
+            console.log("Notification data received:", data);
+            if (data && data.trim() !== '') {
+                $('#notification-container').html(data);
+            } else {
+                $('#notification-container').html(`
+                    <div class="notification-item" style="padding: 20px; text-align: center; color: #666;">
+                        <p style="margin: 0;">Không có thông báo mới</p>
+                    </div>
+                `);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error during loading notifications: ", error);
+            console.error("Status: ", status);
+            console.error("Response: ", xhr.responseText);
+
+            $('#notification-container').html(`
+                <div class="notification-item" style="padding: 20px; text-align: center; color: #dc3545;">
+                    <p style="margin: 0;">Lỗi khi tải thông báo. Vui lòng thử lại sau.</p>
+                </div>
+            `);
+        }
+    });
+}
+
+function closeNotificationModal(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const modal = document.querySelector('.notification-modal');
+    if (modal) {
+        modal.classList.remove('active');
     }
-});
+}
+
+function removeModal(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (container) {
+        const modals = container.querySelectorAll('.modall');
+        modals.forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+}
+

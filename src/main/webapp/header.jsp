@@ -83,11 +83,13 @@
             </script>
 
             <!-- Thông báo -->
-            <div class="notification flex-roww" onclick="toggleNotificationPanel()">
+            <div class="notification flex-roww" onclick="toggleNotificationPanel(event)">
+                <span class="notification-count" id="notification-count"></span>
                 <i class="bi bi-bell"></i>
                 <p> Thông báo</p>
-                <span class="notification-count" id="notification-count"></span>
             </div>
+
+
 
             <div class="user flex-roww">
                 <i class="bi bi-person"></i>
@@ -432,7 +434,22 @@
                     </div>
                 </div>
 
-
+            </div>
+        </div>
+        <div class="modall notification-modal" onclick="removeModal('#modal-container');">
+            <div class="modall-content" style="width: 60%; background-color: unset; top: 20%;">
+                <div class="sub-content" onclick="event.stopPropagation();" style="background-color: white; border-radius: 10px; padding: 20px;">
+                    <div class="flex-roww" style="justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">Thông báo</h3>
+                        <button onclick="closeNotificationModal(event)" class="btn" style="border: none; background: none; font-size: 20px; cursor: pointer;">×</button>
+                    </div>
+                    <div id="notification-container">
+                        <!-- Loading... -->
+                        <div style="text-align: center; padding: 20px;">
+                            <p>Đang tải thông báo...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

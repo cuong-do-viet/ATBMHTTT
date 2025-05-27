@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
+import service.KeyService;
 
 import java.io.File;
 import java.io.IOException;
@@ -152,39 +153,8 @@ public class AdminCustomerController extends HttpServlet {
             case "ISSUEKEY": {
                 System.out.println("issue new keypair");
                 int id = Integer.parseInt(req.getParameter("id"));
-                User user = UserDAO.getInstance().selectById(id);
-
-                try {
-                    // Tạo cặp khóa RSA
-                    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-                    keyGen.initialize(2048); // hoặc 4096 cho bảo mật cao hơn
-                    KeyPair keyPair = keyGen.generateKeyPair();
-                    PublicKey publicKey = keyPair.getPublic();
-                    PrivateKey privateKey = keyPair.getPrivate();
-
-                    // Mã hóa public key sang base64 để lưu vào DB
-                    String publicKeyStr = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-                    String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
-
-                    // Cập nhật hoặc thêm mới public key trong DB
-                    PublicKeyDAO.getInstance().updateOrInsert(id, publicKeyStr);
-
-                    /*
-                    Xử lí với private key?
-                    String email = user.getEmail();
-                    String subject = "Your New Private Key";
-                    String message = "Here is your new private key:\n\n" + privateKeyStr + "\n\nKeep it safe and do not share it.";
-                    EmailUtil.sendMail(email, subject, message);
-                     */
-
-                    String html = htmlSuccessToast("Tạo lại khóa thành công!");
-                    resp.getWriter().write(html);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    String html = htmlErrorToast("Lỗi khi tạo lại khóa: " + e.getMessage());
-                    resp.getWriter().write(html);
-                }
+                KeyService ks = new KeyService();
+                ks.generateKeyAndSend(id);
                 break;
             }
             case "ADD": {

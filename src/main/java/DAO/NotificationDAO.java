@@ -1,19 +1,14 @@
 package DAO;
 
 import model.Notification;
+import service.JDBCUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationDAO {
-    private Connection conn;
-
-    public NotificationDAO() {}
-
-    public NotificationDAO(Connection conn) {
-        this.conn = conn;
-    }
+    private Connection conn = JDBCUtil.getConnection();
 
     // Lấy danh sách thông báo theo username
     public List<Notification> getNotificationsByUsername(String username) throws SQLException {

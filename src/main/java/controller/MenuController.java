@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+
 @WebServlet("/menu")
 public class MenuController extends HttpServlet {
     @Override

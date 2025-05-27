@@ -263,55 +263,130 @@ function toggleNotificationPanel(event) {
 function loadNotificationList() {
     console.log("Loading notification list...");
 
-    const sampleNotifications = `
-        <div class="notification-item" style="padding: 15px; border-bottom: 1px solid #eee;">
-            <p style="margin: 0; font-weight: 500;">Đơn hàng #12345 đã được xác nhận</p>
-            <small style="color: #666;">2 giờ trước</small>
-        </div>
-        <div class="notification-item" style="padding: 15px; border-bottom: 1px solid #eee;">
-            <p style="margin: 0; font-weight: 500;">Khuyến mãi iPhone 15 giảm 20%</p>
-            <small style="color: #666;">1 ngày trước</small>
-        </div>
-        <div class="notification-item" style="padding: 15px;">
-            <p style="margin: 0; font-weight: 500;">Chào mừng bạn đến với Thietbididong.com</p>
-            <small style="color: #666;">3 ngày trước</small>
-        </div>
-        <div class="notification-item" style="padding: 15px; border-bottom: 1px solid #eee;">
-            <p style="margin: 0; font-weight: 500;">Sản phẩm Samsung Galaxy S24 đã có hàng</p>
-            <small style="color: #666;">1 tuần trước</small>
-        </div>
-    `;
-
-    $('#notification-container').html(sampleNotifications);
+    $('#notification-container').html(
+        '<div style="text-align: center; padding: 20px;"><p>Đang tải thông báo...</p></div>'
+    );
 
     $.ajax({
         type: "GET",
-        url: "profile",
+        url: "notification",
         data: { action: "getNotifications" },
         success: function(data) {
             console.log("Notification data received:", data);
-            if (data && data.trim() !== '') {
-                $('#notification-container').html(data);
-            } else {
-                $('#notification-container').html(`
-                    <div class="notification-item" style="padding: 20px; text-align: center; color: #666;">
-                        <p style="margin: 0;">Không có thông báo mới</p>
-                    </div>
-                `);
-            }
+            $('#notification-container').html(data);
+            updateNotificationCount();
         },
         error: function(xhr, status, error) {
             console.error("Error during loading notifications: ", error);
             console.error("Status: ", status);
             console.error("Response: ", xhr.responseText);
 
-            $('#notification-container').html(`
-                <div class="notification-item" style="padding: 20px; text-align: center; color: #dc3545;">
-                    <p style="margin: 0;">Lỗi khi tải thông báo. Vui lòng thử lại sau.</p>
-                </div>
-            `);
+            $('#notification-container').html(
+                '<div class="notification-item" style="padding: 20px; text-align: center; color: #dc3545;">' +
+                '<p style="margin: 0;">Lỗi khi tải thông báo. Vui lòng thử lại sau.</p>' +
+                '</div>'
+            );
         }
     });
+}
+
+function markNotificationAsRead(notificationId) {
+    console.log("Marking notification as read:", notificationId);
+
+    $.ajax({
+        type: "GET",
+        url: "notification",
+        data: {
+            action: "markAsRead",
+            id: notificationId
+        },
+        success: function(response) {
+            console.log("Mark as read response:", response);
+            try {
+                const result = JSON.parse(response);
+                if (result.success) {
+                    const notificationItem = document.querySelector(`[data-id="${notificationId}"]`);
+                    if (notificationItem) {
+                        notificationItem.style.backgroundColor = "#f8f9fa";
+                        notificationItem.classList.add('read');
+                        const unreadDot = notificationItem.querySelector('span[style*="background-color: #007bff"]');
+                        if (unreadDot) {
+                            unreadDot.remove();
+                        }
+                    }
+                    updateNotificationCount();
+                }
+            } catch (e) {
+                console.error("Error parsing response:", e);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error marking notification as read:", error);
+        }
+    });
+}
+
+function deleteNotification(event, notificationId) {
+    event.stopPropagation();
+
+    if (!confirm("Bạn có chắc muốn xóa thông báo này?")) {
+        return;
+    }
+
+    console.log("Deleting notification:", notificationId);
+
+    $.ajax({
+        type: "GET",
+        url: "notification",
+        data: {
+            action: "deleteNotification",
+            id: notificationId
+        },
+        success: function(response) {
+            console.log("Delete notification response:", response);
+            try {
+                const result = JSON.parse(response);
+                if (result.success) {
+                    const notificationItem = document.querySelector(`[data-id="${notificationId}"]`);
+                    if (notificationItem) {
+                        notificationItem.remove();
+                    }
+
+                    const remainingNotifications = document.querySelectorAll('.notification-item[data-id]');
+                    if (remainingNotifications.length === 0) {
+                        $('#notification-container').html(
+                            '<div class="notification-item" style="padding: 20px; text-align: center; color: #666;">' +
+                            '<p style="margin: 0;">Không có thông báo mới</p>' +
+                            '</div>'
+                        );
+                    }
+
+                    updateNotificationCount();
+                    showSuccessToast('Đã xóa thông báo', '#toast-header');
+                }
+            } catch (e) {
+                console.error("Error parsing response:", e);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error deleting notification:", error);
+            showErrorToast('Lỗi khi xóa thông báo', '#toast-header');
+        }
+    });
+}
+
+function updateNotificationCount() {
+    const unreadCount = document.querySelectorAll('.notification-item span[style*="background-color: #007bff"]').length;
+    const countElement = document.getElementById('notification-count');
+
+    if (countElement) {
+        if (unreadCount > 0) {
+            countElement.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            countElement.style.display = 'block';
+        } else {
+            countElement.style.display = 'none';
+        }
+    }
 }
 
 function closeNotificationModal(event) {
@@ -323,13 +398,28 @@ function closeNotificationModal(event) {
     }
 }
 
-function removeModal(containerSelector) {
-    const container = document.querySelector(containerSelector);
-    if (container) {
-        const modals = container.querySelectorAll('.modall');
-        modals.forEach(modal => {
-            modal.classList.remove('active');
-        });
-    }
+function initNotificationCount() {
+    $.ajax({
+        type: "GET",
+        url: "notification",
+        data: { action: "getNotifications" },
+        success: function(data) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = data;
+            const unreadCount = tempDiv.querySelectorAll('span[style*="background-color: #007bff"]').length;
+
+            const countElement = document.getElementById('notification-count');
+            if (countElement && unreadCount > 0) {
+                countElement.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                countElement.style.display = 'block';
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading initial notification count:", error);
+        }
+    });
 }
 
+$(document).ready(function() {
+    initNotificationCount();
+});

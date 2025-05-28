@@ -51,7 +51,7 @@ public class NotificationController extends HttpServlet {
 
     private void handleGetNotifications(HttpServletRequest req, HttpServletResponse resp, User user) throws IOException {
         try {
-            List<Notification> notifications = notificationDAO.getNotificationsByUsername(user.getEmail());
+            List<Notification> notifications = notificationDAO.getNotificationsByUsername(user.getName());
             PrintWriter out = resp.getWriter();
 
             if (notifications.isEmpty()) {

@@ -20,6 +20,7 @@ public class NotificationDAO {
                 while (rs.next()) {
                     Notification n = new Notification(
                             rs.getInt("id"),
+                            rs.getInt("user_id"),
                             rs.getString("username"),
                             rs.getString("title"),
                             rs.getString("message"),

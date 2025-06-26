@@ -19,10 +19,10 @@ public class KeyService {
 
     public void generateKeyAndSend(int id) {
         try {
-            // Lấy thông tin User từ userId (giả sử bạn có phương thức này trong DAO hoặc model)
+            // get User from userId
             User user = UserDAO.getInstance().selectById(id);
 
-            // Tạo cặp khóa
+            // create a key pair
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
             KeyPair keyPair = keyGen.generateKeyPair();
@@ -34,14 +34,14 @@ public class KeyService {
             String publicKeyStr = Base64.getEncoder().encodeToString(publicKey.getEncoded());
             String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 
-            // Gửi mail
+            // send mail
             String subject = "Your New Private Key";
             String message = "Here is your new private key:\n\n" +
                     privateKeyStr + "\n\nKeep it safe and do not share it.";
             boolean mailSent = mailService.send(user.getEmail(), subject, message);
 
             if (mailSent) {
-                // Lưu public key vào DB
+                // save public key to DB
                 PublicKeyDAO.getInstance().updateOrInsert(id, publicKeyStr);
                 System.out.println("Public key saved for userId: " + id);
             } else {

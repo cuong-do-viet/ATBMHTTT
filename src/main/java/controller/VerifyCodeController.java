@@ -12,8 +12,12 @@ import model.Constant;
 
 import java.io.IOException;
 
+/**
+ * Verify code for email verification??
+ */
 @WebServlet("/verify")
 public class VerifyCodeController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
@@ -24,6 +28,7 @@ public class VerifyCodeController extends HttpServlet {
         String action = req.getParameter("action");
         String email = req.getParameter("email");
 
+        // ehrm, if there are no action keyword just pass email to it?
         if(action == null || action.isEmpty()) {
             req.setAttribute("email", email);
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/verifyCode.jsp");
@@ -31,6 +36,7 @@ public class VerifyCodeController extends HttpServlet {
         } else {
             action = action.toUpperCase();
             switch(action) {
+                // this is just for sending?
                 case "SIGNUP": {
                     System.out.println("verify code signup");
                     req.setAttribute("email", email);
@@ -39,6 +45,7 @@ public class VerifyCodeController extends HttpServlet {
                     rd.forward(req, resp);
                     break;
                 }
+                // time to actually verify
                 case "VERIFY" : {
                     System.out.println("verifying code");
                     email = "2003tonhat@gmail.com"; //test

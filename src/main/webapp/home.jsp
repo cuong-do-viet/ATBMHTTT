@@ -45,7 +45,7 @@
                 <%
                     for (ProductUnit p : saledOnlineProductUnits) {
                 %>
-                <%--                    mot san pham --%>
+                <%--mot san pham--%>
                 <div class="grid-col-2_4 product-item-container">
                     <div class="product-item">
                         <a href="<%=p.getUrlToDetail()%>">
@@ -58,26 +58,17 @@
                             </div>
                             <div class="info promotion">
                                 <%--                                    <p class="promotion-item"><i class="bi bi-gift"></i><%=p.getPromotion()%></p>--%>
-                                <p class="promotion-item"><%=p.getSaleProgramItem()%>
-                                </p>
+                                <p class="promotion-item"><%=p.getSaleProgramItem()%></p>
                             </div>
                             <div class="info name">
-                                <p><%=p.getFullName()%>
-                                </p>
+                                <p><%=p.getFullName()%></p>
                             </div>
                             <div class="info features flex-roww">
                                 <%--                                    <p class="feature-item">Man hinh 4k</p>--%>
                                 <%=p.getFeatureItems()%>
                             </div>
                             <div class="version flex-roww group">
-                                <%--                                    <div class="version-item active" onclick="getPriceOf(event);">--%>
-                                <%--                                        <p>64gb</p>--%>
-                                <%--                                    </div>--%>
-                                <%--                                    <div class="version-item" onclick="getPriceOf(event);">--%>
-                                <%--                                        <p>128gb</p>--%>
-                                <%--                                    </div>--%>
                                 <%=p.getStorageVersionItems()%>
-
                             </div>
                             <div class="price">
                                 <div><p class="cur-price"><%=p.getCurrentPrice()%> <span>VND</span></p></div>
@@ -94,7 +85,6 @@
 
 
                     </div>
-
                 </div>
 
                 <%

@@ -40,6 +40,8 @@ function openModal(modal) {
 }
 
 function getPriceOf(event){
+    event.preventDefault();
+    event.stopPropagation();
     console.log("getPrice of event");
 }
 

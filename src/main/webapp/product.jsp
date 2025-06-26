@@ -6,11 +6,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <%@ include file="header_import.jsp" %>
     <%
         String category = (String) request.getAttribute("category");
         if(category==null) category="Điện thoại";
     %>
-    <%@ include file="header_import.jsp" %>
     <title>Thietbididong.com - <%=category%></title>
     <!-- css tu them   -->
     <link href="./assets/css/smartphone.css" rel="stylesheet">

@@ -18,6 +18,7 @@ import java.time.LocalDate;
 
 @WebServlet("/signup")
 public class SignupController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
@@ -27,12 +28,12 @@ public class SignupController extends HttpServlet {
 
         String action = req.getParameter("action");
         if(action == null || action.isEmpty()) {
-
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/signup.jsp");
             rd.forward(req, resp);
         } else {
             action = action.toUpperCase();
             switch(action) {
+                // JUST YOU KNOW, SIGN UP, NOTHING TO SEE HERE
                 case "SIGNUP": {
                     System.out.println("check signup");
                     String email = req.getParameter("email");
@@ -51,14 +52,10 @@ public class SignupController extends HttpServlet {
                         User user = new User(name,email,hashPassword,info);
                         int re=UserDAO.getInstance().insert(user);
                         if(re!=0) { // insert thanh cong
-
                             // khoi tao otp va insert vao database
                             VerifyCode verifyCode = new VerifyCode(email);
                             String code = VerifyCodeDAO.getInstance().insertNewCode(verifyCode);
-
                             // hien tai dang bi loi phan gui mail
-
-
                             String html = renderHtml(email);
                             resp.getWriter().write(html);
                         } else {
@@ -67,8 +64,6 @@ public class SignupController extends HttpServlet {
                             resp.getWriter().write(html);
                         }
                     }
-
-
                     break;
                 }
             }

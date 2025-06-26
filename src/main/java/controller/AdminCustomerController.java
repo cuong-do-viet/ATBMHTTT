@@ -22,8 +22,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+/**
+ * Handling admin customer stuff (THERE ARE action parameter for some reason)
+ */
 @WebServlet("/admincustomer")
 public class AdminCustomerController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
@@ -35,6 +39,7 @@ public class AdminCustomerController extends HttpServlet {
         String action = req.getParameter("action");
         action = action.toUpperCase();
         switch (action) {
+            // search: with param search, try looking for admin and redirect to adminProduct.jsp
             case "SEARCH": {
                 String idin = req.getParameter("search");
                 ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().searchForAdmin(idin);
@@ -57,6 +62,7 @@ public class AdminCustomerController extends HttpServlet {
 //                resp.getWriter().write(html);
                 break;
             }
+            // prepareupdate: with param id (of product), get product form html to add
             case "PREPAREUPDATE" : {
                 String idString = req.getParameter("id");
                 System.out.println("prepare update id: "+idString);
@@ -64,11 +70,12 @@ public class AdminCustomerController extends HttpServlet {
                 ProductUnit p = ProductUnitDAO.getInstance().selectForUpdateProduct(id);
                 ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(p.cateID);
                 ArrayList<Image> imgs = ImageDAO.getInstance().selectByParentID(p.getProductID());
-                String html = renderUpdateForm(p,brands, imgs) ;
+                String html = renderUpdateForm(p, brands, imgs) ;
                 System.out.println("html:" + html);
                 resp.getWriter().write(html);
                 break;
             }
+            // lock: with param id (of customer), lock a user out of system
             case "LOCK": {
                 System.out.println("lock customer");
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -83,6 +90,7 @@ public class AdminCustomerController extends HttpServlet {
                 resp.getWriter().write(html);
                 break;
             }
+            // active: unlock user of id (of customer)
             case "ACTIVE": {
                 System.out.println("active customer");
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -97,6 +105,7 @@ public class AdminCustomerController extends HttpServlet {
                 resp.getWriter().write(html);
                 break;
             }
+            // delete: delete user of id (of customer)
             case "DELETE": {
                 System.out.println("delete customer");
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -108,6 +117,7 @@ public class AdminCustomerController extends HttpServlet {
                 }
                 break;
             }
+            // order: with id of customer, jump to order list of that customer
             case "ORDER": {
                 System.out.println("cutomer: order");
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -116,6 +126,7 @@ public class AdminCustomerController extends HttpServlet {
 
                 break;
             }
+            // showdetail: with id of customer, get that customer user info
             case "SHOWDETAIL": {
                 System.out.println("show detail customer");
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -125,6 +136,7 @@ public class AdminCustomerController extends HttpServlet {
                 resp.getWriter().write(html);
                 break;
             }
+            // issuepassword: with id of customer, issue a password reset
             case "ISSUEPASSWORD": {
                 System.out.println("issue customer password");
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -147,8 +159,9 @@ public class AdminCustomerController extends HttpServlet {
                 }
                 break;
             }
+            // add: with param name, email, dateIn, defaultPassword; add a new customer to the system
             case "ADD": {
-                System.out.println("admin product : add product");
+                System.out.println("admin product : add customer");
                 String name = req.getParameter("name");
                 String email = req.getParameter("email");
                 String dateIn = req.getParameter("dateIn");
@@ -184,7 +197,6 @@ public class AdminCustomerController extends HttpServlet {
 
     public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<Image> imgs) {
         String re="";
-//        re = "                    <form action=\"adminproduct\" method=\"POST\" id=\"updateInfoForm\" enctype=\"multipart/form-data\">\n" +
         re =
                 "                        <h4 class=\"confirm-content\" style=\"text-align: center\">Cập nhật thông tin sản phẩm</h4>\n" +
                         "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 10px;\">\n" +
@@ -316,9 +328,9 @@ public class AdminCustomerController extends HttpServlet {
                         "                            <button class=\"btn  btn-fourth btn-cancel\" type=\"button\" onclick=\"closeModal(event);\">Hủy</button>\n" +
                         "                            <button class=\"btn btn-primary btn-confirm\" onclick=\"\" type=\"submit\">Lưu</button>\n" +
                         "                        </div>\n";
-//                "                    </form>\n";
         return re;
     }
+
     public String getFileName(Part part) {
         String contentDisposition = part.getHeader("Content-Disposition");
         for (String content : contentDisposition.split(";")) {
@@ -328,7 +340,6 @@ public class AdminCustomerController extends HttpServlet {
         }
         return null;
     }
-
 
     public String getConfigurationTable(String config) {
         String re="";

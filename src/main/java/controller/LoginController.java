@@ -25,7 +25,6 @@ public class LoginController extends HttpServlet {
 
         String action = req.getParameter("action");
         if(action == null || action.isEmpty()) {
-
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.jsp");
             rd.forward(req, resp);
         } else {

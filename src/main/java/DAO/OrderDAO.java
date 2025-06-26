@@ -180,6 +180,7 @@ public class OrderDAO implements IDAO<Order> {
             pst.setInt(1, offset);
             pst.setInt(2, amount);
             ResultSet rs = pst.executeQuery();
+            Order o;
             while(rs.next()) {
                 int id = rs.getInt("id");
                 double money = rs.getDouble("money");
@@ -188,7 +189,8 @@ public class OrderDAO implements IDAO<Order> {
                 LocalDateTime dateSet = rs.getObject("dateSet",LocalDateTime.class);
                 LocalDateTime updateTime = rs.getObject("updateTime",LocalDateTime.class);
                 int status = rs.getInt("status");
-                res.add(new Order(id,money,userID,address,dateSet,updateTime,status));
+                o = new Order(id,money,userID,address,dateSet,updateTime,status);
+                res.add(o);
             }
             JDBCUtil.closeConnection(conn);
             return res;
@@ -246,21 +248,20 @@ public class OrderDAO implements IDAO<Order> {
 
     public ArrayList<OrderUnit> selectOrderUnitByStatus(int statusCondition, int offset, int amount) {
         ArrayList<OrderUnit> res = new ArrayList<>();
-        Map<Order,OrderUnit> maps = new LinkedHashMap<>();
+        Map<Integer,OrderUnit> maps = new LinkedHashMap<>();
         ArrayList<Order> orders = selectOrderByStatus(statusCondition, offset, amount);
         ArrayList<OrderDetail> details = selectDetailByOrders(orders);
 
         for (Order o : orders) {
-            maps.put(o, new OrderUnit(o));
+            maps.put(o.getId(), new OrderUnit(o));
         }
         for(OrderDetail d : details) {
             int orderID = d.orderId;
-            maps.get(new Order(orderID)).details.add(d);
+            maps.get(orderID).details.add(d);
         }
         for (OrderUnit orderUnit : maps.values()) {
             res.add(orderUnit);
         }
-
         return res;
 
     }

@@ -178,11 +178,12 @@ public class AdminCustomerController extends HttpServlet {
                     RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminmenu?action=admincustomer&message=addSuccess_"+id);
                     dispatcher.forward(req, resp);
                 }
-
-
                 break;
             }
-
+            default: {
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/admin");
+                dispatcher.forward(req, resp);
+            }
         }
 
     }

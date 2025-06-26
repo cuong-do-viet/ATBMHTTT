@@ -140,7 +140,8 @@ public class UserDAO implements IDAO<User> {
                 System.out.println("rolesJson: " + rolesJson);
                 Gson gson = new Gson();
                 String[] roles = gson.fromJson(rolesJson, String[].class);
-                System.out.println("roles1: " + roles[0]);
+                if (roles != null && roles.length > 0)
+                    System.out.println("roles1: " + roles[0]);
 
                 user = new User(id,name,reEmail,roles,"");
             }

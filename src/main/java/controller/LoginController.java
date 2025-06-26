@@ -48,7 +48,7 @@ public class LoginController extends HttpServlet {
                         session.setAttribute("userLogging",u);
                         System.out.println("page: " + page);
                         html = renderHtml("SUCCESS",page);
-                        if(u.getRoles().length!=0) { //admin
+                        if(u.getRoles() != null && u.getRoles().length > 0) { //admin
                             System.out.println("confirm admin");
                             html = callFunction("forward(\"adminmenu?action=init\");");
                         }

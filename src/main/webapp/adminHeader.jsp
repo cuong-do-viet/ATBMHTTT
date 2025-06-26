@@ -30,10 +30,9 @@
     <link href="./assets/css/base.css" rel="stylesheet">
     <link href="./assets/css/modal.css" rel="stylesheet">
 
-
-
     <link href="./assets/css/adminBase.css" rel="stylesheet">
     <link href="./assets/css/adminOrder.css" rel="stylesheet">
+
 </head>
 <body>
 <%
@@ -55,14 +54,15 @@
 
             <li class="nav-item dropdown pe-3">
 
-                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" onfocus="handleFocus(event)">
-                    <span class="d-none d-md-block dropdown-toggle ps-2"><%=userLogging.getName()%></span>
+                <a class="nav-link d-flex align-items-center pe-0 dropdown-toggle"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownMenuButton">
+                    <span class="d-none d-md-block ps-2"><%=userLogging.getName()%></span>
                 </a><!-- End Profile Iamge Icon -->
 
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                <ul class="dropdown-menu profile" aria-labelledby="dropdownMenuButton">
                     <li class="dropdown-header">
-                        <h6>chuc vu</h6>
-                        <span>phong ban</span>
+                        <h6>Chức vụ</h6>
+                        <span>Phòng ban</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -93,16 +93,17 @@
     <script>
 
         const link = document.querySelector('.nav-profile');
+        if (link) {
+            link.addEventListener("focus", (e) => {
+                e.preventDefault();
+                document.querySelector('.profile').classList.add('active');
+            });
 
-        link.addEventListener("focus", (e) => {
-            e.preventDefault();
-            document.querySelector('.profile').classList.add('active');
-        });
-
-        link.addEventListener("blur", (e) => {
-            e.preventDefault();
-            document.querySelector('.profile').classList.remove('active');
-        });
+            link.addEventListener("blur", (e) => {
+                e.preventDefault();
+                document.querySelector('.profile').classList.remove('active');
+            });
+        }
     </script>
 </header>
 

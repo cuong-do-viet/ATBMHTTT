@@ -100,12 +100,4 @@ tr:nth-child(odd) select {
 }
 
 
-/*header*/
-.dropdown-menu {
-    display: none !important;
-}
-
-.dropdown-menu.active {
-    display: block !important;
-}
 

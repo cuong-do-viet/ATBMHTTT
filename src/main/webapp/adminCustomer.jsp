@@ -10,11 +10,6 @@
     <meta content="" name="description">
     <meta content="" name="keywords">
 
-    <script type="text/javascript" src="./assets/js/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" src="./assets/js/js_bootstrap4/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./assets/js/toast.js"></script>
-    <script type="text/javascript" src="./assets/js/admin.js"></script>
-
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -31,15 +26,20 @@
     <link href="./assets/css/vendor/simple-datatables/style.css" rel="stylesheet">
 
     <!-- Template Main CSS File -->
-    <link href="./assets/css/style.css" rel="stylesheet">
-    <link href="./assets/css/base.css" rel="stylesheet">
-    <link href="./assets/css/modal.css" rel="stylesheet">
-    <link href="./assets/css/toast.css" rel="stylesheet">
+<%--    <link href="./assets/css/style.css" rel="stylesheet">--%>
+<%--    <link href="./assets/css/base.css" rel="stylesheet">--%>
+<%--    <link href="./assets/css/modal.css" rel="stylesheet">--%>
+<%--    <link href="./assets/css/toast.css" rel="stylesheet">--%>
 
 
 
     <link href="./assets/css/adminBase.css" rel="stylesheet">
     <link href="./assets/css/adminCustomer.css" rel="stylesheet">
+    <script type="text/javascript" src="./assets/js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="./assets/js/popper.min.js"></script>
+    <script type="text/javascript" src="./assets/js/js_bootstrap4/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./assets/js/toast.js"></script>
+    <script type="text/javascript" src="./assets/js/admin.js"></script>
 
 
 </head>
@@ -597,8 +597,20 @@
             }
         </script>
     <div id="server-response"></div>
+
+<%--        <div class="dropdown">--%>
+<%--            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">--%>
+<%--                Dropdown button--%>
+<%--            </button>--%>
+<%--            <div class="dropdown-menu z-3" aria-labelledby="dropdownMenuButton">--%>
+<%--                <a class="dropdown-item" href="#">Action</a>--%>
+<%--                <a class="dropdown-item" href="#">Another action</a>--%>
+<%--                <a class="dropdown-item" href="#">Something else here</a>--%>
+<%--            </div>--%>
+<%--        </div>--%>
     </main><!-- End #main -->
 </div>
+
 
 </body>
 </html>

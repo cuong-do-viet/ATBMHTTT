@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 @WebServlet("/index")
 public class IndexController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
@@ -27,7 +28,7 @@ public class IndexController extends HttpServlet {
         ArrayList<ProductUnit> saledOnlineProductUnits = ProductUnitDAO.getInstance().selectBySaleProgram(Constant.ONLINE,0,20);
         ArrayList<ProductUnit> suggestedProductUnits = ProductUnitDAO.getInstance().selectByCategory(Constant.ALL,0,20);
         LocalTime remaningTime = null;
-        if(saledOnlineProductUnits.size()>0) {
+        if(!saledOnlineProductUnits.isEmpty()) {
             remaningTime = SaleProgram.getRemainingTime();
         }
         req.setAttribute("saledOnlineProductUnits",saledOnlineProductUnits);

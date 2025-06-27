@@ -1,9 +1,6 @@
 package controller;
 
-import DAO.BrandDAO;
-import DAO.ImageDAO;
-import DAO.ProductUnitDAO;
-import DAO.UserDAO;
+import DAO.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -14,11 +11,17 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
+import service.KeyService;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Random;
 
@@ -145,6 +148,13 @@ public class AdminCustomerController extends HttpServlet {
                     String html = htmlSuccessToast("Cấp mật khẩu mới thành công!");
                     resp.getWriter().write(html);
                 }
+                break;
+            }
+            case "ISSUEKEY": {
+                System.out.println("issue new keypair");
+                int id = Integer.parseInt(req.getParameter("id"));
+                KeyService ks = new KeyService();
+                ks.generateKeyAndSend(id);
                 break;
             }
             case "ADD": {

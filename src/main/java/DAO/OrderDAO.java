@@ -86,7 +86,7 @@ public class OrderDAO implements IDAO<Order> {
         ArrayList<Order> res = new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from orders where userID= ;";
+            String sql = "select * from orders where userID= ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,userIDin);
             ResultSet rs = pst.executeQuery();

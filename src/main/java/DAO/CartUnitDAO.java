@@ -11,8 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CartUnitDAO implements IDAO<Cart> {
-    public static CartUnitDAO getInstance(){
-        return new CartUnitDAO();
+
+    private CartUnitDAO() {}
+
+    private static class LazyHolder {
+        private static final CartUnitDAO INSTANCE = new CartUnitDAO();
+    }
+    public static CartUnitDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class CartUnitDAO implements IDAO<Cart> {
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "delete from carts where id = ?";
+            String sql = "update carts set deleted = 1 where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,cart.getId());
             re = pst.executeUpdate();
@@ -69,8 +75,8 @@ public class CartUnitDAO implements IDAO<Cart> {
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "SELECT c.id, d.id as productDetailID, p.name, p.version, p.thumbnail, d.color, d.ram, d.rom, d.price, c.qty\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tjoin carts c on d.id = c.productDetailID\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0 and p.deleted = 0\n" +
+                    "\tjoin carts c on d.id = c.productDetailID and c.deleted = 0\n" +
                     "where c.userID = ?\n" +
                     "group by p.id\n" +
                     "order by c.updateTime desc;";
@@ -107,13 +113,13 @@ public class CartUnitDAO implements IDAO<Cart> {
         }
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update carts set qty = "+ newQty +" where id = ?";
+            String sql = "update carts set qty = "+ newQty +" where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re = pst.executeUpdate();
 
             if(re==1) {
-                String sql2 = "select qty from carts where id = ?";
+                String sql2 = "select qty from carts where id = ? and deleted = 0";
                 PreparedStatement pst2 = conn.prepareStatement(sql2);
                 pst2.setInt(1,id);
                 ResultSet rs = pst2.executeQuery();
@@ -133,7 +139,7 @@ public class CartUnitDAO implements IDAO<Cart> {
         int re = 0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from carts where userID = ? and productDetailID = ?";
+            String sql = "select * from carts where userID = ? and productDetailID = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,cart.getUserId());
             pst.setInt(2,cart.getproductDetailID());
@@ -160,8 +166,8 @@ public class CartUnitDAO implements IDAO<Cart> {
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "SELECT c.id, d.id as productDetailID, p.name, p.version, p.thumbnail, d.color, d.ram, d.rom, d.price, c.qty\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tjoin carts c on d.id = c.productDetailID\n" +
+                    "from products p join productdetails d on p.id = d.productID and p.deleted = 0 and d.deleted = 0\n" +
+                    "\tjoin carts c on d.id = c.productDetailID and c.deleted = 0\n" +
                     "where c.id in " + condition +
                     " group by p.id\n" +
                     "order by c.updateTime desc;";
@@ -200,8 +206,8 @@ public class CartUnitDAO implements IDAO<Cart> {
 
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "delete from carts \n" +
-                    "where id in " + condition +";";
+            String sql = "update carts set deleted = 1 \n" +
+                    "where id in " + condition +" and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             re=pst.executeUpdate();
             JDBCUtil.closeConnection(conn);

@@ -106,7 +106,7 @@ public class OrderUnit {
     }
 
     public String getReceiver() {
-        String[] tokens = order.getAddress().split("|");
+        String[] tokens = order.getAddress().split("\\|");
         if(tokens.length > 1) {
             return tokens[0];
         }
@@ -114,7 +114,7 @@ public class OrderUnit {
     }
 
     public String getAddress() {
-        String[] tokens = order.getAddress().split("|");
+        String[] tokens = order.getAddress().split("\\|");
         if(tokens.length == 2) {
             return tokens[1];
         }

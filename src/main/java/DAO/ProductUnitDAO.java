@@ -14,8 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductUnitDAO implements IDAO<ProductUnit>{
-    public static ProductUnitDAO getInstance(){
-        return new ProductUnitDAO();
+
+    private ProductUnitDAO() {}
+
+    private static class LazyHolder {
+        private static final ProductUnitDAO INSTANCE = new ProductUnitDAO();
+    }
+    public static ProductUnitDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
     @Override
     public int insert(ProductUnit productUnit) {
@@ -49,9 +55,9 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "count(DISTINCT c.id) as totalComment,\n" +
                     "avg(c.star) as rate,\n" +
                     "p.avai as avai\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "where p.id=?\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "where p.id=?\n and p.deleted = 0" +
                     "group by p.id\n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, pid);
@@ -82,9 +88,9 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
 
     public ArrayList<ProductUnit> selectByCategory(int categoryID,int offset, int amount) {
         ArrayList<ProductUnit> res = new ArrayList<>();
-        String condition="";
+        String condition="where p.deleted = 0";
         if(categoryID!= Constant.ALL) {
-            condition = "where p.cateID=?\n";
+            condition = "where p.cateID=?\n and p.deleted = 0";
         }
         try {
             Connection conn = JDBCUtil.getConnection();
@@ -98,11 +104,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "s.name as saleprogram,\n" +
                     "p.avai as avai,\n" +
                     "sum(d.qty) as totalQty\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "    left join saleprograms s on s.objectID = p.id and s.deleted = 0 and s.main=1 \n" +
                     condition +
-                    "group by p.id\n" +
+                    " group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?\n";
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -145,9 +151,9 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
 
     public ArrayList<ProductUnit> selectByCategoryForAdmin(int categoryID,int offset, int amount) {
         ArrayList<ProductUnit> res = new ArrayList<>();
-        String condition="";
+        String condition=" and p.deleted = 0";
         if(categoryID!= Constant.ALL) {
-            condition = "and p.cateID=?\n";
+            condition = "and p.cateID=?\n  and p.deleted = 0";
         }
         try {
             Connection conn = JDBCUtil.getConnection();
@@ -160,11 +166,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "b.id as brandID,\n" +
                     "b.name as brand,\n" +
                     "p.cateID as cateID\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "    left join brands b on p.brandID = b.id\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "    left join brands b on p.brandID = b.id and b.deleted = 0\n" +
                     " where p.avai !=" + Constant.DELETE + " " +
                         condition +
-                    "group by p.id\n" +
+                    " group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?";
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -207,9 +213,9 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
     }
     public int selectCountByCategory(int categoryID) {
         int re=0;
-        String condition="";
+        String condition=" where deleted = 0";
         if(categoryID!= Constant.ALL) {
-            condition = "where cateID=?\n";
+            condition = "where cateID=?\n and deleted = 0";
         }
         try {
             Connection conn = JDBCUtil.getConnection();
@@ -239,11 +245,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "s.id as saleprogramID,\n" +
                     "s.name as saleprogram,\n" +
                     "p.avai as avai\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id and s.main=1\n" +
-                    "where p.id in (select otherID from crosssells where productID = ?)\n" +
-                    "group by p.id\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "    left join saleprograms s on s.objectID = p.id and s.main=1 and s.deleted = 0\n" +
+                    "where p.id in (select otherID from crosssells where productID = ? and deleted = 0)\n" +
+                    " and p.deleted = 0 group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?\n";
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -289,10 +295,10 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "s.id as saleprogramID,\n" +
                     "s.name as saleprogram,\n" +
                     "p.avai as avai\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
-                    "where s.main=?\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "    left join saleprograms s on s.objectID = p.id  and s.main=1 and s.deleted = 0\n" +
+                    "where s.main=? and p.deleted = 0\n" +
                     "group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?\n";
@@ -360,11 +366,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "s.id as saleprogramID,\n" +
                     "s.name as saleprogram,\n" +
                     "p.avai as avai\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "    left join saleprograms s on s.objectID = p.id  and s.main=1 and s.deleted = 0\n" +
                      condition +"\n " +
-                    "group by p.id\n" +
+                    " and p.deleted = 0 group by p.id\n" +
                     "order by "+ sortSql +"\n" +
                     "limit ?,?\n";
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -435,11 +441,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "s.id as saleprogramID,\n" +
                     "s.name as saleprogram,\n" +
                     "p.avai as avai\n" +
-                    "from products p join productdetails d on p.id = d.productID " +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0 " +
                                             priceCondition+ "\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
-                    osCondition + "\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "    left join saleprograms s on s.objectID = p.id  and s.main=1 and s.deleted = 0\n" +
+                    osCondition + "\n  and p.deleted = 0" +
                     "group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?";
@@ -491,11 +497,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "s.id as saleprogramID,\n" +
                     "s.name as saleprogram,\n" +
                     "p.cateID\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
+                    "    left join saleprograms s on s.objectID = p.id  and s.main=1 and s.deleted = 0\n" +
                     condition +
-                    " group by p.id\n" +
+                    " and p.deleted = 0 group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?\n";
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -540,7 +546,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "   firstSale=?," +
                     "   prominence=?, " +
                     "   des=? " +
-                    "where id=?";
+                    "where id=? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,p.name);
             pst.setString(2,p.version);
@@ -565,7 +571,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "update products set thumbnail =? " +
-                    "where id=?";
+                    "where id=? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,filePath);
             pst.setInt(2,id);
@@ -590,7 +596,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         }
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "delete from images where parentID = ?; \n";
+            String sql = "update images set deleted = 1 where parentID = ? and deleted = 0; \n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -610,7 +616,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         ProductUnit re = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from products where id=?;";
+            String sql = "select * from products where id=? and deleted = 0;";
 
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,idin);
@@ -642,7 +648,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update products set avai = "+ Constant.LOCK+ " where id = ?;";
+            String sql = "update products set avai = "+ Constant.LOCK+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -657,7 +663,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update products set avai = "+ Constant.ACTIVE+ " where id = ?;";
+            String sql = "update products set avai = "+ Constant.ACTIVE+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -672,7 +678,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update products set avai = "+ Constant.DELETE+ " where id = ?;";
+            String sql = "update products set avai = "+ Constant.DELETE+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -687,7 +693,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         ArrayList<ProductDetail> res =new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from productdetails where productID = ? and avai != ?;";
+            String sql = "select * from productdetails where productID = ? and avai != ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, pid);
             pst.setInt(2, Constant.DELETE);
@@ -722,7 +728,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "rom=?, " +
                     "price=?, " +
                     "qty=? " +
-                    " where id = ?;";
+                    " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,detail.getColor());
             pst.setInt(2,detail.getRam());
@@ -742,7 +748,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         ProductDetail re =null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from productdetails where id = ?;";
+            String sql = "select * from productdetails where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, did);
 //            System.out.println(pst);
@@ -771,7 +777,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update productdetails set avai = "+ Constant.LOCK+ " where id = ?;";
+            String sql = "update productdetails set avai = "+ Constant.LOCK+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -786,7 +792,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update productdetails set avai = "+ Constant.ACTIVE+ " where id = ?;";
+            String sql = "update productdetails set avai = "+ Constant.ACTIVE+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -801,7 +807,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update productdetails set avai = "+ Constant.DELETE+ " where id = ?;";
+            String sql = "update productdetails set avai = "+ Constant.DELETE+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -831,7 +837,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
             re= pst.executeUpdate();
             int id=0;
             if(re==1) {
-                sql = "select max(id) as id from products;";
+                sql = "select max(id) as id from products and deleted = 0;";
                 pst = conn.prepareStatement(sql);
                 ResultSet rs = pst.executeQuery();
                 while(rs.next()) {
@@ -881,10 +887,10 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "b.id as brandID,\n" +
                     "b.name as brand,\n" +
                     "p.cateID as cateID\n" +
-                    "from products p join productdetails d on p.id = d.productID\n" +
-                    "    left join brands b on p.brandID = b.id\n" +
+                    "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
+                    "    left join brands b on p.brandID = b.id and b.deleted = 0\n" +
                     " where p.avai !=" + Constant.DELETE + " and p.id like ?" +
-                    "group by p.id\n" +
+                    " and p.deleted = 0 group by p.id\n" +
                     "order by p.prominence desc;\n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, "%"+idin+"%");

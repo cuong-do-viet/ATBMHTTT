@@ -15,8 +15,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class UserDAO implements IDAO<User> {
-    public static UserDAO getInstance(){
-        return new UserDAO();
+
+    private UserDAO() {}
+
+    private static class LazyHolder {
+        private static final UserDAO INSTANCE = new UserDAO();
+    }
+    public static UserDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
     @Override
     public int insert(User user) { // tra ve id
@@ -32,7 +38,7 @@ public class UserDAO implements IDAO<User> {
             re = pst.executeUpdate();
             int id=0;
             if(re==1) {
-                sql = "select max(id) as id from users;";
+                sql = "select max(id) as id from users where deleted = 0;";
                 pst = conn.prepareStatement(sql);
                 ResultSet rs = pst.executeQuery();
                 while(rs.next()) {
@@ -51,7 +57,7 @@ public class UserDAO implements IDAO<User> {
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update users set name = ? , email = ? , info = ? where id = ?;";
+            String sql = "update users set name = ? , email = ? , info = ? where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, user.getName());
             pst.setString(2, user.getEmail());
@@ -77,7 +83,7 @@ public class UserDAO implements IDAO<User> {
         ArrayList<User> res = new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from users;";
+            String sql = "select * from users where deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
@@ -101,7 +107,7 @@ public class UserDAO implements IDAO<User> {
         User user = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT * FROM `users` where id = ?";
+            String sql = "SELECT * FROM `users` where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, idin);
             ResultSet rs = pst.executeQuery();
@@ -127,7 +133,7 @@ public class UserDAO implements IDAO<User> {
         User user = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT * FROM `users` WHERE email = ? and password =?;";
+            String sql = "SELECT * FROM `users` WHERE email = ? and password =? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, email);
             pst.setString(2, password);
@@ -157,7 +163,7 @@ public class UserDAO implements IDAO<User> {
         int count =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT count(*) FROM `users` WHERE email = ?";
+            String sql = "SELECT count(*) FROM `users` WHERE email = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, email);
             ResultSet rs = pst.executeQuery();
@@ -176,7 +182,7 @@ public class UserDAO implements IDAO<User> {
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update users set password = ? where id = ?;";
+            String sql = "update users set password = ? where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,pwd);
             pst.setInt(2, idin);
@@ -194,7 +200,7 @@ public class UserDAO implements IDAO<User> {
         ArrayList<User> res = new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT * FROM `users` WHERE roles IS NULL and avai != ? order by id desc;";
+            String sql = "SELECT * FROM `users` WHERE roles IS NULL and avai != ? and deleted = 0 order by id desc;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,Constant.DELETE);
             ResultSet rs = pst.executeQuery();
@@ -215,7 +221,7 @@ public class UserDAO implements IDAO<User> {
         ArrayList<User> res = new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT * FROM `users` WHERE roles IS NOT NULL and avai != ? order by id desc;";
+            String sql = "SELECT * FROM `users` WHERE roles IS NOT NULL and avai != ? and deleted = 0 order by id desc;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,Constant.DELETE);
             ResultSet rs = pst.executeQuery();
@@ -236,7 +242,7 @@ public class UserDAO implements IDAO<User> {
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update users set avai = "+ Constant.LOCK+ " where id = ?;";
+            String sql = "update users set avai = "+ Constant.LOCK+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -251,7 +257,7 @@ public class UserDAO implements IDAO<User> {
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update users set avai = "+ Constant.ACTIVE+ " where id = ?;";
+            String sql = "update users set avai = "+ Constant.ACTIVE+ " where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -266,7 +272,7 @@ public class UserDAO implements IDAO<User> {
         int re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update users set avai = "+ Constant.DELETE+ " where id = ?;";
+            String sql = "update users set avai = "+ Constant.DELETE+ ", deleted = 1 where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             re= pst.executeUpdate();
@@ -299,7 +305,7 @@ public class UserDAO implements IDAO<User> {
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update users set roles = ? where id = ?;";
+            String sql = "update users set roles = ? where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,roles);
             pst.setInt(2, idin);
@@ -317,7 +323,7 @@ public class UserDAO implements IDAO<User> {
         String re=null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select roles from users where id = ?;";
+            String sql = "select roles from users where id = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, idin);
             ResultSet rs = pst.executeQuery();

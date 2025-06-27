@@ -62,7 +62,8 @@
                         const byStatus = this.querySelector("input[name='byStatus']");
                         var value = document.querySelector("select[name='byStatus']").value;
                         byStatus.value = value;
-                        //this.submit();
+                        // ajax time: i want to query for it?
+                        this.submit();
                     });
                 </script>
                 <div class="flex-roww">
@@ -86,6 +87,7 @@
                         <th scope="col" class="grid-col-1">Tạo lúc</th>
                         <th scope="col" class="grid-col-3_5">Danh sách sản phẩm</th>
                         <th scope="col" class="grid-col-1_5">Tổng tiền</th>
+                        <th scope="col" class="grid-col-1">Xác thực</th>
                         <%--                        <th scope="col" class="grid-col-1">Địa chỉ</th>--%>
                         <th scope="col" class="grid-col-1">Trạng thái</th>
                         <th scope="col" class="grid-col-1">Cập nhật vào</th>
@@ -108,20 +110,21 @@
                         </td>
                         <td class="grid-col-1_5"><%=o.getTotalMoney()%>
                         </td>
+                        <td>HOH</td>
                         <td class="grid-col-1"><span
                                 class="status-<%=o.getStatus()%>"><%=Constant.getStatusString(o.getStatus())%></span>
                         </td>
                         <td class="grid-col-1 text-center"><span class="updateTime time"><%=o.getUpdateTime()%></span>
                         </td>
                         <td class="grid-col-1">
-                            <p>Trạng thái kế:</p>
+                            <p>Cập nhật nhanh:</p>
                             <button class="btn btn-status-<%=o.getNextStatus()%>" type="button"
                                     onclick="updateStatus('<%=o.getOrderID()%>','<%=o.getNextStatus()%>')">
                                 <%=o.getNextStatusString()%>
                             </button>
                             <select name="action" onchange="handleChange(event);" data-default="none"
                                     style="margin-bottom: 15px;">
-                                <option value="none">Chọn trạng thái đơn hàng</option>
+                                <option value="none">Chọn trạng thái</option>
                                 <option value="<%=Constant.CONFIRM%>">Xác nhận</option>
                                 <option class="" value="<%=Constant.DELIVERY%>">Bàn giao</option>
                                 <option class="" value="<%=Constant.COMPLETE%>">Thành công</option>
@@ -151,13 +154,7 @@
 
 
                     <script>
-                        function showAddress(event) {
-                            event.preventDefault();
-                            event.currentTarget.parentNode.querySelector(".address-container").classList.add("active");
-                            console.log();
-                        }
-
-                        // xử lý khi action được chọn
+                        // xử lý khi action được chọn trên một dòng nhất định
                         function handleChange(event) {
                             event.stopPropagation();
                             let selectedValue = event.target.value;
@@ -189,6 +186,7 @@
 
                                 success: function (data) {
                                     $('#order-list-container').html(data);
+                                    $('#order-list-container .dropdown-toggle').dropdown()
                                 },
                                 error: function (error) {
                                     $('#server-response').html(error.responseText);
@@ -214,7 +212,20 @@
 
                         document.querySelector('select[name="byStatus"]').addEventListener('change', function (event) {
                             console.log("byStatus change");
-                            window.location.assign("adminorder?action=byStatus&byStatus=" + event.target.value);
+
+                            var pageActiveItem = document.querySelector('.page-item .page-link.active');
+                            if (pageActiveItem) {
+                                var page = pageActiveItem.getAttribute('data-value');
+                                var byStatus = event.currentTarget.value;
+                                console.log("page:" + page);
+                                console.log("byStatus:" + byStatus);
+                                queryOrder(page, byStatus)
+                            }
+                            else {
+                                console.log("BRUH")
+                            }
+
+                            // window.location.assign("adminorder?action=byStatus&byStatus=" + event.target.value);
                         });
 
 
@@ -256,9 +267,7 @@
                             </a>
                         </li>
 
-                        <% for (int i = 1; i <= numOfPages; i++) {
-
-                        %>
+                        <% for (int i = 1; i <= numOfPages; i++) {%>
                         <li class="page-item"><a class="page-link" data-value="<%=i%>" href="#"
                                                  onclick="queryPage(event)"><%=i%>
                         </a></li>

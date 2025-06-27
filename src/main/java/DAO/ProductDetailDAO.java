@@ -11,8 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ProductDetailDAO implements IDAO<ProductDetail>{
-    public static ProductDetailDAO getInstance(){
-        return new ProductDetailDAO();
+
+    private ProductDetailDAO() {}
+
+    private static class LazyHolder {
+        private static final ProductDetailDAO INSTANCE = new ProductDetailDAO();
+    }
+    public static ProductDetailDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
@@ -66,7 +72,7 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
         ArrayList<ProductDetail> res = new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT * FROM productdetails where productID = ?;";
+            String sql = "SELECT * FROM productdetails where productID = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, productIDin);
             ResultSet rs = pst.executeQuery();
@@ -108,7 +114,7 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
         }
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "SELECT * FROM productdetails where productID = ? and "+ condition1 + " and "+ condition2 + " and qty > 0;";
+            String sql = "SELECT * FROM productdetails where productID = ? and "+ condition1 + " and "+ condition2 + " and qty > 0 and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, productIDin);
             ResultSet rs = pst.executeQuery();
@@ -140,7 +146,7 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
             Connection conn = JDBCUtil.getConnection();
             String sql = "SELECT id FROM productdetails where productID=? " +
                     "and color = ? " +
-                    "and rom = ? " +
+                    "and rom = ?  and deleted = 0" +
                     ramCondition;
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,productID);
@@ -173,7 +179,7 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
             String sql = "update productdetails set qty = case \n" +
                                                                 newValue +
                                                         "END\n" +
-                                                "where id in " + condition+";";
+                                                "where id in " + condition+" and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             re = pst.executeUpdate();
             JDBCUtil.closeConnection(conn);

@@ -13,8 +13,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class OrderDAO implements IDAO<Order> {
-    public static OrderDAO getInstance(){
-        return new OrderDAO();
+
+    private OrderDAO() {}
+
+    private static class LazyHolder {
+        private static final OrderDAO INSTANCE = new OrderDAO();
+    }
+    public static OrderDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
@@ -29,7 +35,7 @@ public class OrderDAO implements IDAO<Order> {
             pst.setString(3, order.getAddress());
             re = pst.executeUpdate();
 
-            String sql2 = "select max(id) as id from orders where userID= "+order.getUserID()+";";
+            String sql2 = "select max(id) as id from orders where userID= "+order.getUserID()+" and deleted = 0;";
             PreparedStatement pst2 = conn.prepareStatement(sql2);
             ResultSet rs = pst2.executeQuery();
             while(rs.next()){
@@ -148,7 +154,7 @@ public class OrderDAO implements IDAO<Order> {
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select status from orders where id = ? ;";
+            String sql = "select status from orders where id = ?  and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
             ResultSet rs = pst.executeQuery();
@@ -165,9 +171,9 @@ public class OrderDAO implements IDAO<Order> {
 
     public ArrayList<Order> selectOrderByStatus(int statusCondition, int offset, int amount) {
         ArrayList<Order> res = new ArrayList<>();
-        String condition = "" ;
+        String condition = " where deleted = 0" ;
         if(statusCondition!=-1) {
-            condition= "where status = '" + statusCondition + "'";
+            condition= "where status = '" + statusCondition + "' and deleted = 0";
         }
         System.out.println(condition);
         try {
@@ -202,7 +208,7 @@ public class OrderDAO implements IDAO<Order> {
 
     public ArrayList<OrderDetail> selectDetailByOrders(ArrayList<Order> orders) {
         ArrayList<OrderDetail> res = new ArrayList<>();
-        if(orders.size()==0) {return new ArrayList<>();}
+        if(orders.isEmpty()) {return new ArrayList<>();}
         String idList = "(" ;
         for(Order o : orders){
             idList+=o.getId()+",";
@@ -217,9 +223,9 @@ public class OrderDAO implements IDAO<Order> {
                     "    pd.color, pd.ram, pd.rom, " +
                     "    od.qty, od.currentPrice, \n" +
                     "   p.thumbnail \n" +
-                    "    from orderdetails od join productdetails pd on od.productDetailID = pd.id \n" +
-                    "                       join products p on p.id = pd.productID \n" +
-                    "   where od.orderID in " + idList +";";
+                    "    from orderdetails od join productdetails pd on od.productDetailID = pd.id and pd.deleted = 0 \n" +
+                    "                       join products p on p.id = pd.productID and p.deleted = 0 \n" +
+                    "   where od.orderID in " + idList +" and od.deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
             while(rs.next()) {
@@ -268,9 +274,9 @@ public class OrderDAO implements IDAO<Order> {
 
     public int selectCountOrderUnitBy(int statusCondition) {
         int re=0;
-        String condition = "" ;
+        String condition = " where deleted = 0" ;
         if(statusCondition!=-1) {
-            condition= "where status = '" + statusCondition + "'";
+            condition= "where status = '" + statusCondition + "' and deleted = 0";
         }
         try {
             Connection conn = JDBCUtil.getConnection();
@@ -299,7 +305,7 @@ public class OrderDAO implements IDAO<Order> {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select * from orders\n" +
                     " where " + condition + " (updateTime like ? or dateSet like ?) "+
-                    "\n   order by updateTime desc \n" +
+                    "\n  and deleted = 0 order by updateTime desc \n" +
                     "limit ?,?;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, "%"+time+"%");
@@ -357,7 +363,7 @@ public class OrderDAO implements IDAO<Order> {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select * from orders\n" +
                     " where " + condition + " id like ?"+
-                    "\n   order by updateTime desc \n" +
+                    "\n  and deleted = 0  order by updateTime desc \n" +
                     "limit ?,?;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, "%"+idin+"%");
@@ -408,7 +414,7 @@ public class OrderDAO implements IDAO<Order> {
         int re= 0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update orders set status = ? where id = ?";
+            String sql = "update orders set status = ? where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,newStatus);
             pst.setInt(2,idin);
@@ -447,7 +453,7 @@ public class OrderDAO implements IDAO<Order> {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select * from orders\n" +
                     " where userID = ? " +
-                    "\n   order by updateTime desc; \n";
+                    "\n  and deleted = 0  order by updateTime desc; \n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, userIDin);
             ResultSet rs = pst.executeQuery();
@@ -500,7 +506,7 @@ public class OrderDAO implements IDAO<Order> {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select * from orders\n" +
                     " where userID = ? " + statusCondition +
-                    "\n   order by updateTime desc; \n";
+                    "\n and deleted = 0   order by updateTime desc; \n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, userIDin);
             ResultSet rs = pst.executeQuery();
@@ -539,7 +545,7 @@ public class OrderDAO implements IDAO<Order> {
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select * from orders\n" +
-                    " where id = ?; \n";
+                    " where id = ? and deleted = 0; \n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, idin);
             ResultSet rs = pst.executeQuery();
@@ -566,7 +572,7 @@ public class OrderDAO implements IDAO<Order> {
         double re =0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select sum(money) as total from orders where userID = ?";
+            String sql = "select sum(money) as total from orders where userID = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();

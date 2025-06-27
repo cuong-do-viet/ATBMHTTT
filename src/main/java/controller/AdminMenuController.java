@@ -27,7 +27,7 @@ public class AdminMenuController extends HttpServlet {
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
         if (userLogging == null) {
-            System.out.println("huh no user, better send them to login page i suppose");
+            System.out.println("huh no userlog, better send them to login page i suppose");
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }

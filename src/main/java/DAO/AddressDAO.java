@@ -10,9 +10,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AddressDAO implements IDAO<Address>{
-    public static AddressDAO getInstance(){
-        return new AddressDAO();
+
+    private AddressDAO() {}
+
+    private static class LazyHolder {
+        private static final AddressDAO INSTANCE = new AddressDAO();
     }
+    public static AddressDAO getInstance() {
+        return LazyHolder.INSTANCE;
+    }
+
     @Override
     public int insert(Address a) {
         int re=0;
@@ -47,7 +54,7 @@ public class AddressDAO implements IDAO<Address>{
                     "village=?," +
                     "district=?," +
                     "province=? " +
-                    " where id = ?";
+                    " where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,a.getReceiver());
             pst.setString(2,a.getPhone());
@@ -70,7 +77,7 @@ public class AddressDAO implements IDAO<Address>{
         int re = 0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "delete from addresses where id = ?";
+            String sql = "update addresses set deleted = 1 where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,address.getId());
             re = pst.executeUpdate();
@@ -91,7 +98,7 @@ public class AddressDAO implements IDAO<Address>{
         Address re = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from addresses where id = ?";
+            String sql = "select * from addresses where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,idin);
             ResultSet rs = pst.executeQuery();
@@ -116,7 +123,7 @@ public class AddressDAO implements IDAO<Address>{
         ArrayList<Address> res = new ArrayList<>();
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from addresses where userID = ? order by updateTime desc";
+            String sql = "select * from addresses where userID = ? and deleted = 0 order by updateTime desc";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,userIDin);
             ResultSet rs = pst.executeQuery();

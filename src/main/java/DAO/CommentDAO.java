@@ -9,8 +9,14 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class CommentDAO implements IDAO<Comment> {
-    public static CommentDAO getInstance(){
-        return new CommentDAO();
+
+    private CommentDAO() {}
+
+    private static class LazyHolder {
+        private static final CommentDAO INSTANCE = new CommentDAO();
+    }
+    public static CommentDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
@@ -43,8 +49,8 @@ public class CommentDAO implements IDAO<Comment> {
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select c.id as cmtID, c.content,c.star,u.id as userID, u.name as userName, c.time " +
-                    "from comments c join users u on c.userID = u.id " +
-                    "where c.objectID = ? and c.avai = "+ Constant.ACTIVE+ " " +
+                    "from comments c join users u on c.userID = u.id and u.deleted = 0 " +
+                    "where c.objectID = ? and c.avai = "+ Constant.ACTIVE+ " and c.deleted = 0 " +
                     "order by c.id desc;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, oID);

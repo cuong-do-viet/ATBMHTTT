@@ -24,6 +24,11 @@ public class AdminOrderController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if (userLogging == null) {
+            System.out.println("huh no userlog, better send them to login page i suppose");
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
 
         String action = req.getParameter("action");
         action = action.toUpperCase();
@@ -144,39 +149,41 @@ public class AdminOrderController extends HttpServlet {
     }
 
     public String renderOrderList(ArrayList<OrderUnit> orderunits) {
-        StringBuilder re=new StringBuilder();
-        for(OrderUnit o : orderunits) {
-            String temp = "<tr class=\"group\" >\n" +
-                    "                        <th scope=\"row\" class=\"grid-col-0_5 text-center id\" style=\"height: fit-content;\">"+o.getOrderID()+"</th>\n" +
-                    "                        <td class=\"grid-col-1 text-center\">\n" +
-                    "                            <span class=\"time\">"+o.getDateSet()+"</span>\n" +
-                    "                        </td>\n" +
-                    "                        <td class=\"grid-col-3_5\">\n" +
-                                                o.getProductList() +
-                    "\n" +
-                    "                        </td>\n" +
-                    "                        <td class=\"grid-col-1_5\">"+o.getTotalMoney()+"VND</td>\n" +
-                    "                        <td class=\"grid-col-1\"><span class=\"status-"+o.getStatus()+"\">"+o.getStatusString()+"</span></td>\n" +
-                    "                        <td class=\"grid-col-1 text-center\"><span class=\"updateTime time\">"+o.getUpdateTime()+"</span></td>\n" +
-                    "                        <td class=\"grid-col-1\">\n" +
-                    "                            <button class=\"btn btn-status-"+o.getNextStatus()+"\" type=\"button\" onclick=\"updateStatus('"+o.getOrderID()+"','"+o.getNextStatus()+"')\">"+o.getNextStatusString()+"</button>\n" +
-                    "                            <select name=\"action\" onchange=\"handleChange(event);\" data-default=\"none\" style=\"margin-bottom: 15px;\" >\n" +
-                    "                                <option value=\"none\">...</option>\n" +
-                    "                                <option value=\""+ Constant.CONFIRM+"\">Xác nhận</option>\n" +
-                    "                                <option class=\"\" value=\""+Constant.DELIVERY+"\">Bàn giao</option>\n" +
-                    "                                <option class=\"\" value=\""+Constant.COMPLETE+"\">Thành công</option>\n" +
-                    "                                <option value=\""+Constant.CANCEL+"\">Hủy</option>\n" +
-                    "                                <option value=\"detail\">Chi tiết</option>\n" +
-                    "                            </select>\n" +
-                    "                            <a class=\"address-detail-btn\" href=\"\" onclick=\"event.preventDefault()\">Địa chỉ</a>\n" +
-                    "                                <div style=\"position: relative;\">\n" +
-                    "                                    <div class=\"address-container sub-content\">\n" +
-                    "                                        <p>"+o.getReceiver()+"</p>\n" +
-                    "                                        <p>"+o.getAddress()+"</p>\n" +
-                    "                                    </div>\n" +
-                    "                                </div>\n" +
-                    "                        </td>\n" +
-                    "                    </tr>";
+        StringBuilder re = new StringBuilder();
+        for (OrderUnit o : orderunits) {
+            String statusString = Constant.getStatusString(o.getStatus()); // Lấy chuỗi trạng thái
+            String temp = "<tr class=\"group\">" +
+                    "<th scope=\"row\" class=\"grid-col-0_5 text-center id\" style=\"height: fit-content;\">" + o.getOrderID() + "</th>" +
+                    "<td class=\"grid-col-1 text-center\"><span class=\"time\">" + o.getDateSet() + "</span></td>" +
+                    "<td class=\"grid-col-3_5\">" + o.getProductList() + "</td>" +
+                    "<td class=\"grid-col-1_5\">" + o.getTotalMoney() + "</td>" + // Bỏ "VND" nếu không muốn
+                    "<td>HOH</td>" +
+                    "<td class=\"grid-col-1\"><span class=\"status-" + o.getStatus() + "\">" + statusString + "</span></td>" +
+                    "<td class=\"grid-col-1 text-center\"><span class=\"updateTime time\">" + o.getUpdateTime() + "</span></td>" +
+                    "<td class=\"grid-col-1\">" +
+                    "<p>Cập nhật nhanh:</p>" +
+                    "<button class=\"btn btn-status-" + o.getNextStatus() + "\" type=\"button\" onclick=\"updateStatus('" + o.getOrderID() + "','" + o.getNextStatus() + "')\">" + o.getNextStatusString() + "</button>" +
+                    "<select name=\"action\" onchange=\"handleChange(event);\" data-default=\"none\" style=\"margin-bottom: 15px;\">" +
+                    "<option value=\"none\">Chọn trạng thái</option>" + // Sửa lại text
+                    "<option value=\"" + Constant.CONFIRM + "\">Xác nhận</option>" +
+                    "<option class=\"\" value=\"" + Constant.DELIVERY + "\">Bàn giao</option>" +
+                    "<option class=\"\" value=\"" + Constant.COMPLETE + "\">Thành công</option>" +
+                    "<option value=\"" + Constant.CANCEL + "\">Hủy</option>" +
+                    "<option value=\"detail\">Chi tiết</option>" +
+                    "</select>" +
+
+                    // ----- PHẦN SỬA LẠI ĐỂ ĐỒNG BỘ DROPDOWN -----
+                    "<div class=\"dropdown\">" +
+                    "    <a class=\"dropdown-toggle address-detail-btn\" href=\"#\" onclick=\"event.preventDefault()\" role=\"button\" id=\"dropdownMenuLink" + o.getOrderID() + "\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">Địa chỉ</a>" +
+                    "    <div class=\"dropdown-menu address-container sub-content\" aria-labelledby=\"dropdownMenuLink" + o.getOrderID() + "\">" +
+                    "        <p>Người nhận: " + o.getReceiver() + "</p>" +
+                    "        <p>Địa chỉ: " + o.getAddress() + "</p>" +
+                    "    </div>" +
+                    "</div>" +
+                    // ----- KẾT THÚC PHẦN SỬA -----
+
+                    "</td>" +
+                    "</tr>";
             re.append(temp);
         }
         return re.toString();

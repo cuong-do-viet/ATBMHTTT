@@ -29,7 +29,7 @@ public class ProductDetailController  extends HttpServlet {
         String version = req.getParameter("version");
 
         String action  = req.getParameter("action");
-        if(action==null || action.isEmpty()) {
+//        if(action==null || action.isEmpty()) {
 //            ProductUnit pu = ProductUnitDAO.getInstance().selectDetailOf(productID,version);
 //            ArrayList<Image> images = ImageDAO.getInstance().selectByProductDetail(productID,version);
 //            ArrayList<Integer> puIDs = pu.getIDs();
@@ -43,7 +43,7 @@ public class ProductDetailController  extends HttpServlet {
 
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/product.jsp");
             rd.forward(req, resp);
-        }
+//        }
 
 
 

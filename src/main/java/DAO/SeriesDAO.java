@@ -8,8 +8,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SeriesDAO implements IDAO<String>{
-    public static SeriesDAO getInstance(){
-        return new SeriesDAO();
+
+    private SeriesDAO() {}
+
+    private static class LazyHolder {
+        private static final SeriesDAO INSTANCE = new SeriesDAO();
+    }
+    public static SeriesDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
     @Override
     public int insert(String s) {

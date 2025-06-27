@@ -6,14 +6,13 @@ import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.Signature;
 
-public class HashAlgorism {
-	public String algorism;
+public class HashAlgorithm {
+	public String algorithm;
 	
-	public HashAlgorism() {
+	public HashAlgorithm() {
 		super();
-		this.algorism = "MD5";
+		this.algorithm = "MD5";
 	}
 
 	
@@ -30,7 +29,7 @@ public class HashAlgorism {
 	}
 
 	public String hash(String mes) throws Exception {
-        MessageDigest md = MessageDigest.getInstance(this.algorism);
+        MessageDigest md = MessageDigest.getInstance(this.algorithm);
         byte[] data = mes.getBytes();
         byte[] digest = md.digest(data);
         BigInteger bi = new BigInteger(1, digest);
@@ -38,7 +37,7 @@ public class HashAlgorism {
     }
 
     public String hashFile(String src) throws Exception {
-        MessageDigest md = MessageDigest.getInstance(this.algorism);
+        MessageDigest md = MessageDigest.getInstance(this.algorithm);
         File f = new File(src);
         if(!f.exists()) return null;
         DigestInputStream dis = new DigestInputStream(new BufferedInputStream(new FileInputStream(f)),md);
@@ -56,7 +55,7 @@ public class HashAlgorism {
     public static void main(String[] args) throws Exception {
         // sau khi co ket qua md5 thi co the dung tool online de test
         // neu result giong nhau thi la dung
-        HashAlgorism md5 = new HashAlgorism();
+        HashAlgorithm md5 = new HashAlgorithm();
         long t=System.currentTimeMillis();
         System.out.println(md5.hash("1234"));
         System.out.println(System.currentTimeMillis()-t);

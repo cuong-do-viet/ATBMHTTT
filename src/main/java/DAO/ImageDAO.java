@@ -10,8 +10,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ImageDAO implements IDAO<Image>{
-    public static ImageDAO getInstance(){
-        return new ImageDAO();
+
+    private ImageDAO() {}
+
+    private static class LazyHolder {
+        private static final ImageDAO INSTANCE = new ImageDAO();
+    }
+    public static ImageDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
@@ -39,7 +45,7 @@ public class ImageDAO implements IDAO<Image>{
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update images set url = ? where parentID =?;";
+            String sql = "update images set url = ? where parentID =? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1,image.getUrl());
             pst.setInt(2,image.getParentID());
@@ -64,7 +70,7 @@ public class ImageDAO implements IDAO<Image>{
         try {
             Connection conn = JDBCUtil.getConnection();
 
-            String sql = "select * from images;";
+            String sql = "select * from images where deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
 
 
@@ -98,7 +104,7 @@ public class ImageDAO implements IDAO<Image>{
             Connection conn = JDBCUtil.getConnection();
 
             String sql = "select * from images " +
-                    "where parentID = ?";
+                    "where parentID = ? and deleted = 0";
 
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, pID);

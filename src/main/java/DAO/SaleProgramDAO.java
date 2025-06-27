@@ -9,8 +9,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class SaleProgramDAO implements IDAO<SaleProgram> {
-    public static SaleProgramDAO getInstance(){
-        return new SaleProgramDAO();
+
+    private SaleProgramDAO() {}
+
+    private static class LazyHolder {
+        private static final SaleProgramDAO INSTANCE = new SaleProgramDAO();
+    }
+    public static SaleProgramDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
@@ -38,7 +44,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
         SaleProgram saleProgram = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from saleprograms where id = ?";
+            String sql = "select * from saleprograms where id = ? and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
             System.out.println(pst);
@@ -71,7 +77,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
         try {
             Connection conn = JDBCUtil.getConnection();
 
-            String sql = "select * from saleprograms where objectID = ? and main = " + Constant.MAIN;
+            String sql = "select * from saleprograms where objectID = ? and main = " + Constant.MAIN + "  and deleted = 0";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();
@@ -102,7 +108,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
         try {
             Connection conn = JDBCUtil.getConnection();
 
-            String sql = "select endTime from saleprograms where main = ? and avai = 1 order by id desc limit 0,1";
+            String sql = "select endTime from saleprograms where main = ? and avai = 1 and deleted = 0 order by id desc limit 0,1";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, Constant.ONLINE);
             System.out.println(pst);
@@ -132,7 +138,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
             Connection conn = JDBCUtil.getConnection();
 
             String sql = "select id, name, max(discount) as discount from saleprograms where objectID in \n" +
-                    "(select DISTINCT productID from productdetails where id in "+ condition+")\n";
+                    "(select DISTINCT productID from productdetails where id in "+ condition+"  and deleted = 0)  and deleted = 0\n";
             PreparedStatement pst = conn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){

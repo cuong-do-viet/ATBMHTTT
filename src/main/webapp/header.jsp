@@ -1,53 +1,15 @@
 <%@ page import="model.User" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Thietbididong.com</title>
-
-    <!-- thu vien jquery   -->
-    <script type="text/javascript" src="./assets/js/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" src="./assets/js/js_bootstrap4/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./assets/js/header.js"></script>
-    <script type="text/javascript" src="./assets/js/login.js"></script>
-    <script type="text/javascript" src="./assets/js/smartphone.js"></script>
-    <script type="text/javascript" src="./assets/js/toast.js"></script>
-
-    <!-- Favicons -->
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-    <!--icon-->
-    <link rel="stylesheet" href="./assets/fonts/fontawesome-free-6.4.0-web/css/all.min.css">
-    <link rel="stylesheet" href="./assets/fonts/fonts-bootstrap/bootstrap-icons.min.css">
-
-    <!-- Template Main CSS File -->
-    <link rel="stylesheet" href="./assets/css/css_bootstrap4/bootstrap.min.css">
-
-    <link href="./assets/css/base.css" rel="stylesheet">
-    <link href="./assets/css/header.css" rel="stylesheet">
-    <link href="./assets/css/toast.css" rel="stylesheet">
-
-    <!-- css tu them   -->
-    <link href="./assets/css/smartphone.css" rel="stylesheet">
-    <link href="./assets/css/index.css" rel="stylesheet">
-    <link href="./assets/css/login.css" rel="stylesheet">
-
-</head>
-<body>
 <%
     User userLogging = (User) session.getAttribute("userLogging");
 //    userLogging = new User(1,"Minh Nhat","minhnhat@gmail.com");
 %>
 
 <div class="header pd10-20">
-    <div id="toast-header" class="toast">
 
-    </div>
+    <%--Toast container--%>
+    <div id="toast-header" class="toast"></div>
 
+    <%--Header supposed--%>
     <div class="header_top grid__row flex-roww">
         <a href="index" class="logo grid-col-2 pd0">
             <img src="./assets/img/logo/Logo-The-Gioi-Di-Dong-MWG-B-H.webp" alt="" style="color:black;">
@@ -126,8 +88,10 @@
             </li>
         </ul>
     </div>
+
+    <%--Modal for what?--%>
     <div id="modal-container">
-        <!--   cap nhat so dia chi -->
+        <%--Address book update--%>
         <div class="modall address-modal" onclick="removeModal('#modal-container');">
             <div class="modall-content" style="width: 80%; background-color: unset;">
                 <div class="flex-roww" style="align-items: start;justify-content: space-between;height: 100%;">
@@ -213,7 +177,7 @@
             </div>
         </div>
 
-
+        <%--User info modal--%>
         <div class="modall info-modal" onclick="removeModal('#modal-container');">
             <div class="modall-content" style="width: 80%; background-color: unset;top: 35%;">
                 <div class="flex-roww" style="align-items: start;justify-content: center;height: 100%;">
@@ -412,25 +376,23 @@
 
             </div>
         </div>
-        <div class="modall login-require-modal" onclick="removeModal('#modal-container');">
+
+        <%--Require login modal--%>
+        <div class="modall login-require-modal">
             <div class="modall-content" style="width: 80%; background-color: unset;">
                 <div style="width: 100%; background-color: white;border-radius: 10px;padding: 20px;">
                     <div class="flex-roww" style="justify-content: center;margin:22px 0;font-size: 19px">
                         <p>Bạn chưa đăng nhập, vui lòng đăng nhập để sử dụng giỏ hàng</p>
                     </div>
                     <div class="flex-roww" style="justify-content: space-around; margin-top: 20px">
-                        <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('.modal-filter-details')"><i class="bi bi-x-lg"></i> Hủy</button>
+                        <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('#modal-container')"><i class="bi bi-x-lg"></i> Hủy</button>
                         <a href="login?action=require&pageAction=forward&page=cart" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
                     </div>
                 </div>
-
-
             </div>
         </div>
-
     </div>
+
+    <%--Header response?--%>
     <div id="header-response"></div>
 </div>
-
-</body>
-</html>

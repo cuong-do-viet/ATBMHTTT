@@ -27,8 +27,8 @@ public class AdminMenuController extends HttpServlet {
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
         if (userLogging == null) {
-            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/login");
-            dispatcher.forward(req, resp);
+            System.out.println("huh no userlog, better send them to login page i suppose");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
@@ -74,7 +74,11 @@ public class AdminMenuController extends HttpServlet {
             }
             case "ADMINORDER": {
                 System.out.println("menu admin order");
-                ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitByStatus(-1,0,200);
+                ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitByStatus(-1,0,Constant.NUM_OF_ITEMS_A_PAGE);
+                int numOfOrders = OrderDAO.getInstance().selectCountOrderUnitBy(-1);
+                Integer numOfPages = numOfOrders / Constant.NUM_OF_ITEMS_A_PAGE;
+                if(numOfOrders % Constant.NUM_OF_ITEMS_A_PAGE != 0) numOfPages++;
+                req.setAttribute("numOfPages", numOfPages);
                 req.setAttribute("orderUnits", orderUnits);
                 session.setAttribute("adminMenu", "order");
                 RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminOrder.jsp");

@@ -11,8 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CategoryDAO implements IDAO<Category> {
-    public static CategoryDAO getInstance(){
-        return new CategoryDAO();
+
+    private CategoryDAO() {}
+
+    private static class LazyHolder {
+        private static final CategoryDAO INSTANCE = new CategoryDAO();
+    }
+    public static CategoryDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override

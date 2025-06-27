@@ -25,7 +25,6 @@ public class LoginController extends HttpServlet {
 
         String action = req.getParameter("action");
         if(action == null || action.isEmpty()) {
-
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.jsp");
             rd.forward(req, resp);
         } else {
@@ -48,7 +47,7 @@ public class LoginController extends HttpServlet {
                         session.setAttribute("userLogging",u);
                         System.out.println("page: " + page);
                         html = renderHtml("SUCCESS",page);
-                        if(u.getRoles().length!=0) { //admin
+                        if(u.getRoles() != null && u.getRoles().length > 0) { //admin
                             System.out.println("confirm admin");
                             html = callFunction("forward(\"adminmenu?action=init\");");
                         }

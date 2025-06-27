@@ -9,17 +9,25 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class VerifyCodeDAO implements IDAO<VerifyCode> {
-    public static VerifyCodeDAO getInstance(){
-        return new VerifyCodeDAO();
+
+    private VerifyCodeDAO() {
+    }
+
+    private static class LazyHolder {
+        private static final VerifyCodeDAO INSTANCE = new VerifyCodeDAO();
+    }
+
+    public static VerifyCodeDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
     public int insert(VerifyCode verifyCode) {
-        int re=0;
+        int re = 0;
         Random rand = new Random();
-        String code ="";
-        for(int i=0;i<6; i++) {
-            code+= String.valueOf(rand.nextInt(9)+1);
+        String code = "";
+        for (int i = 0; i < 6; i++) {
+            code += String.valueOf(rand.nextInt(9) + 1);
         }
         verifyCode.setCode(code);
         try {
@@ -39,11 +47,11 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
     }
 
     public String insertNewCode(VerifyCode verifyCode) {
-        int re=0;
+        int re = 0;
         Random rand = new Random();
-        String code ="";
-        for(int i=0;i<6; i++) {
-            code+= String.valueOf(rand.nextInt(9)+1);
+        String code = "";
+        for (int i = 0; i < 6; i++) {
+            code += String.valueOf(rand.nextInt(9) + 1);
         }
         verifyCode.setCode(code);
         try {
@@ -55,13 +63,14 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
             pst.setInt(3, verifyCode.getIsVerify());
             re = pst.executeUpdate();
             JDBCUtil.closeConnection(conn);
-            if(re==1) return code;
+            if (re == 1) return code;
             else return "insert code to database failed";
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public int update(VerifyCode verifyCode) {
         return 0;
@@ -86,7 +95,7 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
         VerifyCode re = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "select * from verifycode where email = ? ORDER by id desc LIMIT 1;";
+            String sql = "select * from verifycode where email = ? and deleted = 0 ORDER by id desc LIMIT 1;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailin);
             ResultSet rs = pst.executeQuery();
@@ -108,7 +117,7 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
         int re = 0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "update verifycode set isVerify = ? where code = ?;";
+            String sql = "update verifycode set isVerify = ? where code = ? and deleted = 0;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, Constant.USED_CODE);
             pst.setString(2, code);
@@ -147,7 +156,7 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
     }
 
     public static void main(String[] args) {
-        int re = VerifyCodeDAO.getInstance().verifyCode("11111","2003tonhat@gmail.com");
+        int re = VerifyCodeDAO.getInstance().verifyCode("11111", "2003tonhat@gmail.com");
         System.out.println(re);
     }
 }

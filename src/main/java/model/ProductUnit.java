@@ -11,6 +11,9 @@ import java.sql.Date;
 import java.text.NumberFormat;
 import java.util.*;
 
+/**
+ * product unit for ???
+ */
 public class ProductUnit {
     public int productID;
     public String name;
@@ -41,7 +44,7 @@ public class ProductUnit {
 
 
     // update admin
-    public ProductUnit(int productID, String name, String version, Brand brand, int cateID, String config, String thumbnail, String firstSale, int prominence,String des) {
+    public ProductUnit(int productID, String name, String version, Brand brand, int cateID, String config, String thumbnail, String firstSale, int prominence, String des) {
         this.productID = productID;
         this.name = name;
         this.version = version;
@@ -55,9 +58,7 @@ public class ProductUnit {
     }
 
     // base
-
-
-    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram,int avai) {
+    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram, int avai) {
         this.productID = productID;
         this.name = name;
         this.version = version;
@@ -74,7 +75,7 @@ public class ProductUnit {
         this.avai = avai;
     }
 
-    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram,int avai,int totalQty) {
+    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram, int avai, int totalQty) {
         this.productID = productID;
         this.name = name;
         this.version = version;
@@ -89,11 +90,11 @@ public class ProductUnit {
         this.saleProgramID = saleProgramID;
         this.saleProgram = saleProgram;
         this.avai = avai;
-        this.totalQty  = totalQty;
+        this.totalQty = totalQty;
 
     }
 
-    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price,int avai,int totalQty,Brand brand,int cateID) {
+    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, int avai, int totalQty, Brand brand, int cateID) {
         this.productID = productID;
         this.name = name;
         this.version = version;
@@ -104,9 +105,9 @@ public class ProductUnit {
         this.rom = rom;
         this.price = price;
         this.avai = avai;
-        this.totalQty  = totalQty;
+        this.totalQty = totalQty;
         this.brand = brand;
-        this.cateID=cateID;
+        this.cateID = cateID;
     }
 
     //insert product
@@ -139,24 +140,24 @@ public class ProductUnit {
     public ProductUnit(int productID, String name, String version, int cateID, String config, String thumbnail,
                        String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID,
                        String saleProgram) {
-		super();
-		this.productID = productID;
-		this.name = name;
-		this.version = version;
-		this.cateID = cateID;
-		this.config = config;
-		this.thumbnail = thumbnail;
-		this.firstSale = firstSale;
-		this.ram = ram;
-		this.rom = rom;
-		this.price = price;
-		this.star = star;
-		this.totalComment = totalComment;
-		this.saleProgramID = saleProgramID;
-		this.saleProgram = saleProgram;
-	}
+        super();
+        this.productID = productID;
+        this.name = name;
+        this.version = version;
+        this.cateID = cateID;
+        this.config = config;
+        this.thumbnail = thumbnail;
+        this.firstSale = firstSale;
+        this.ram = ram;
+        this.rom = rom;
+        this.price = price;
+        this.star = star;
+        this.totalComment = totalComment;
+        this.saleProgramID = saleProgramID;
+        this.saleProgram = saleProgram;
+    }
 
-	public String getName() {
+    public String getName() {
         return name;
     }
 
@@ -267,6 +268,11 @@ public class ProductUnit {
         return Date.valueOf(date);
     }
 
+    /**
+     * Get current product status: if today is before the sale day then it's upcoming,
+     * if it's between 60 days, then it's new, otherwise NO
+     * @return HTML-text
+     */
     public String getStatusItem() {
         long millis = System.currentTimeMillis();
         Date today = new Date(millis);
@@ -276,7 +282,7 @@ public class ProductUnit {
         } else {
             long differenceInMillis = today.getTime() - saleDate.getTime();
             long differenceInDays = differenceInMillis / (1000 * 60 * 60 * 24);
-            if((differenceInDays<60))
+            if ((differenceInDays < 60))
                 return "<p class=\"status-item status-new\">Mẫu mới</p>";
             else {
                 return "";
@@ -286,7 +292,7 @@ public class ProductUnit {
 
     public String getSaleProgramItem() {
         String re = this.saleProgram;
-        return re==null?"":"<i class=\"bi bi-gift\"></i> "+re;
+        return re == null ? "" : "<i class=\"bi bi-gift\"></i> " + re;
 
     }
 
@@ -295,12 +301,12 @@ public class ProductUnit {
     }
 
     public String getFeatureItems() {
-        String res="";
+        String res = "";
         JsonElement jsonElement = JsonParser.parseString(this.config);
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         JsonArray features = jsonObject.getAsJsonArray("features");
-        for(JsonElement f : features) {
-            res+="<p class=\"feature-item\">"+f.getAsString()+"</p>";
+        for (JsonElement f : features) {
+            res += "<p class=\"feature-item\">" + f.getAsString() + "</p>";
         }
         return res;
     }
@@ -309,40 +315,44 @@ public class ProductUnit {
         return Constant.getCategoryName(this.cateID);
     }
 
+    /**
+     * This function is for rendering versions available for item
+     * @return html-based render text
+     */
     public String getStorageVersionItems() {
-        String re="";
+        String re = "";
         ArrayList<String> versions = new ArrayList<>();
         String[] rams = this.ram.split("-");
         String[] roms = this.rom.split("-");
         boolean sameRam = false;
-        for(int i=0;i<rams.length-1;i++) {
-            if (rams[i].equals(rams[i+1])) {
-                sameRam=true;
+        for (int i = 0; i < rams.length - 1; i++) {
+            if (rams[i].equals(rams[i + 1])) {
+                sameRam = true;
                 break;
             }
         }
-        if((!sameRam) && rams.length>2 && roms.length>2 ) { // them thong tin ram vao version
-            for(int i=0;i<rams.length;i++) {
-                for(int j=0;j<roms.length;j++) {
-                    versions.add(rams[i] +"-"+ roms[j]+"GB");
+        if ((!sameRam) && rams.length > 2 && roms.length > 2) { // them thong tin ram vao version
+            for (int i = 0; i < rams.length; i++) {
+                for (int j = 0; j < roms.length; j++) {
+                    versions.add(rams[i] + "-" + roms[j] + "GB");
                 }
             }
         } else {
-            for(int j=0;j<roms.length;j++) {
-                versions.add(roms[j]+"GB");
+            for (int j = 0; j < roms.length; j++) {
+                versions.add(roms[j] + "GB");
             }
         }
-        if(versions.isEmpty()) {
+        if (versions.isEmpty()) {
             versions.add("1 phiên bản");
         }
 
         re = "   <div class=\"version-item active\" onclick=\"getPriceOf(event);\">\n" +
-             "        <p>"+ versions.get(0) +"</p>\n" +
-             "   </div>";
+                "        <p>" + versions.get(0) + "</p>\n" +
+                "   </div>";
 
-        for(int i=1;i<versions.size();i++) {
-            re+=    "    <div class=\"version-item\" onclick=\"getPriceOf(event);\">\n" +
-                    "         <p>"+ versions.get(i) +"</p>\n" +
+        for (int i = 1; i < versions.size(); i++) {
+            re += "    <div class=\"version-item\" onclick=\"getPriceOf(event);\">\n" +
+                    "         <p>" + versions.get(i) + "</p>\n" +
                     "    </div>";
         }
         return re;
@@ -362,13 +372,13 @@ public class ProductUnit {
         double rate = this.star;
         int rateInt = (int) rate;
         double difference = rate - rateInt;
-        if(difference>=0 && difference<0.25) {
+        if (difference >= 0 && difference < 0.25) {
             return rateInt;
         }
-        if(difference>=0.25 && difference<0.75){
-            return (double)rateInt + 0.5;
+        if (difference >= 0.25 && difference < 0.75) {
+            return (double) rateInt + 0.5;
         }
-        return rateInt +1;
+        return rateInt + 1;
     }
 
     public String getInitialPrice() {
@@ -385,109 +395,109 @@ public class ProductUnit {
     }
 
     public static String getCarouselItems(ArrayList<Image> images) {
-        String re="";
-        if(images==null || images.isEmpty()) {
-            images=new ArrayList<>();
+        String re = "";
+        if (images == null || images.isEmpty()) {
+            images = new ArrayList<>();
             images.add(new Image());
         }
-        re+=    "   <div class=\"carousel-item active\">\n" +
-                "       <img class=\"d-block w-100\" src=\"./assets/img/product/"+images.get(0).getUrl()+"\" alt=\""+images.get(0).getTitle()+"\">\n" +
+        re += "   <div class=\"carousel-item active\">\n" +
+                "       <img class=\"d-block w-100\" src=\"./assets/img/product/" + images.get(0).getUrl() + "\" alt=\"" + images.get(0).getTitle() + "\">\n" +
                 "   </div>";
-        for(int i=1;i<images.size();i++) {
-            re+=    "   <div class=\"carousel-item\">\n" +
-                    "       <img class=\"d-block w-100\" src=\"./assets/img/product/"+images.get(i).getUrl()+"\" alt=\""+images.get(i).getTitle()+"\">\n" +
+        for (int i = 1; i < images.size(); i++) {
+            re += "   <div class=\"carousel-item\">\n" +
+                    "       <img class=\"d-block w-100\" src=\"./assets/img/product/" + images.get(i).getUrl() + "\" alt=\"" + images.get(i).getTitle() + "\">\n" +
                     "   </div>";
         }
         return re;
     }
 
     public static String getCarouselIndicators(ArrayList<Image> images) {
-        String re="";
-        if(images==null || images.isEmpty()) {
-            images=new ArrayList<>();
+        String re = "";
+        if (images == null || images.isEmpty()) {
+            images = new ArrayList<>();
             images.add(new Image());
         }
-        re+=    "   <li data-target=\"#carouselExampleIndicators\" data-slide-to=\""+0+"\" class=\"grid-col-1 active\">\n" +
-                "       <img class=\"d-block w-100\" src=\"./assets/img/product/"+images.get(0).getUrl()+"\" alt=\"slide "+1+"\">\n" +
+        re += "   <li data-target=\"#carouselExampleIndicators\" data-slide-to=\"" + 0 + "\" class=\"grid-col-1 active\">\n" +
+                "       <img class=\"d-block w-100\" src=\"./assets/img/product/" + images.get(0).getUrl() + "\" alt=\"slide " + 1 + "\">\n" +
                 "   </li>";
-        for(int i=1;i<images.size();i++) {
-            re+=    "   <li data-target=\"#carouselExampleIndicators\" data-slide-to=\""+i+"\" class=\"grid-col-1\">\n" +
-                    "       <img class=\"d-block w-100\" src=\"./assets/img/product/"+images.get(i).getUrl()+"\" alt=\"slide "+(i+1)+"\">\n" +
+        for (int i = 1; i < images.size(); i++) {
+            re += "   <li data-target=\"#carouselExampleIndicators\" data-slide-to=\"" + i + "\" class=\"grid-col-1\">\n" +
+                    "       <img class=\"d-block w-100\" src=\"./assets/img/product/" + images.get(i).getUrl() + "\" alt=\"slide " + (i + 1) + "\">\n" +
                     "   </li>";
         }
         return re;
     }
 
     public String getConfiguration() {
-        String re="";
+        String re = "";
 //        {"screen":"oled", "display":"6.1 inch",
 //                "front-camera":"12mpx", "main-camera":"200mpx",
 //                "os": "one ui 6.1", "chip": "snapdragon 8 gen 2 for galaxy",
 //                "battery":"3000mah", "charge":"20w", "features": ["oled","200mpx"]}
         JsonObject jsonObject = JsonParser.parseString(this.config).getAsJsonObject();
-        re+=" <div class=\"grid__row p-des-info\">\n" +
-            "     <p class=\"grid-col-5 des-label\">"+getConfigHelper("ram")+":</p>\n" +
-            "     <p class=\"grid-col-5 des-info\">"+this.ram+" (GB)</p>\n" +
-            "     <div class=\"seperate-horizontal-90\"></div>\n" +
-            " </div>";
-        re+=" <div class=\"grid__row p-des-info\">\n" +
-            "     <p class=\"grid-col-5 des-label\">"+getConfigHelper("rom")+":</p>\n" +
-            "     <p class=\"grid-col-5 des-info\">"+this.rom+" (GB)</p>\n" +
-            "     <div class=\"seperate-horizontal-90\"></div>\n" +
-            " </div>";
+        re += " <div class=\"grid__row p-des-info\">\n" +
+                "     <p class=\"grid-col-5 des-label\">" + getConfigHelper("ram") + ":</p>\n" +
+                "     <p class=\"grid-col-5 des-info\">" + this.ram + " (GB)</p>\n" +
+                "     <div class=\"seperate-horizontal-90\"></div>\n" +
+                " </div>";
+        re += " <div class=\"grid__row p-des-info\">\n" +
+                "     <p class=\"grid-col-5 des-label\">" + getConfigHelper("rom") + ":</p>\n" +
+                "     <p class=\"grid-col-5 des-info\">" + this.rom + " (GB)</p>\n" +
+                "     <div class=\"seperate-horizontal-90\"></div>\n" +
+                " </div>";
         for (String key : jsonObject.keySet()) {
             JsonElement value = jsonObject.get(key);
-            if(value.isJsonArray()) continue;
-            re+=" <div class=\"grid__row p-des-info\">\n" +
-                "     <p class=\"grid-col-5 des-label\">"+getConfigHelper(key)+":</p>\n" +
-                "     <p class=\"grid-col-5 des-info\">"+value.getAsString()+"</p>\n" +
-                "     <div class=\"seperate-horizontal-100\"></div>\n" +
-                " </div>";
+            if (value.isJsonArray()) continue;
+            re += " <div class=\"grid__row p-des-info\">\n" +
+                    "     <p class=\"grid-col-5 des-label\">" + getConfigHelper(key) + ":</p>\n" +
+                    "     <p class=\"grid-col-5 des-info\">" + value.getAsString() + "</p>\n" +
+                    "     <div class=\"seperate-horizontal-100\"></div>\n" +
+                    " </div>";
         }
-       return re;
+        return re;
     }
 
     public static String getConfigHelper(String input) {
-        String re=input;
-        switch (input)  {
+        String re = input;
+        switch (input) {
             case "screen": {
-                re= "Màn hình";
+                re = "Màn hình";
                 break;
             }
             case "display": {
-                re= "Hiển thị";
+                re = "Hiển thị";
                 break;
             }
             case "front-camera": {
-                re= "Camera trước";
+                re = "Camera trước";
                 break;
             }
             case "main-camera": {
-                re= "Camera chính";
+                re = "Camera chính";
                 break;
             }
             case "os": {
-                re= "Hệ điều hành";
+                re = "Hệ điều hành";
                 break;
             }
             case "chip": {
-                re= "Chip xử lý (CPU)";
+                re = "Chip xử lý (CPU)";
                 break;
             }
             case "battery": {
-                re= "Pin (mAh)";
+                re = "Pin (mAh)";
                 break;
             }
             case "charge": {
-                re= "Sạc (W)";
+                re = "Sạc (W)";
                 break;
             }
             case "ram": {
-                re= "RAM (GB)";
+                re = "RAM (GB)";
                 break;
             }
             case "rom": {
-                re= "ROM (GB)";
+                re = "ROM (GB)";
                 break;
             }
         }
@@ -501,22 +511,22 @@ public class ProductUnit {
         ArrayList<Integer> rams = new ArrayList<>();
         ArrayList<Integer> roms = new ArrayList<>();
 
-        for(ProductDetail detail : details) {
-            if(!rams.contains(detail.getRam())) {
+        for (ProductDetail detail : details) {
+            if (!rams.contains(detail.getRam())) {
                 rams.add(detail.getRam());
             }
-            if(!roms.contains(detail.getRom())) {
+            if (!roms.contains(detail.getRom())) {
                 roms.add(detail.getRom());
             }
         }
-        if(rams.size()<=1) {
-            for(Integer rom : roms) {
-                res.add(rom+ "GB");
+        if (rams.size() <= 1) {
+            for (Integer rom : roms) {
+                res.add(rom + "GB");
             }
         } else {
-            for(ProductDetail detail : details) {
-                String s = detail.getRam() + "GB - " + detail.getRom()+"GB";
-                if(!res.contains(s)) {
+            for (ProductDetail detail : details) {
+                String s = detail.getRam() + "GB - " + detail.getRom() + "GB";
+                if (!res.contains(s)) {
                     res.add(s);
                 }
             }
@@ -527,8 +537,8 @@ public class ProductUnit {
     public ArrayList<String> getColorItems() {
         ArrayList<String> res = new ArrayList<>();
         ArrayList<ProductDetail> details = this.details;
-        for(ProductDetail detail : details) {
-            if(!res.contains(detail.getColor())) {
+        for (ProductDetail detail : details) {
+            if (!res.contains(detail.getColor())) {
                 res.add(detail.getColor());
             }
         }
@@ -540,43 +550,43 @@ public class ProductUnit {
         ArrayList<ProductDetail> details = this.details;
 //        ArrayList<ProductDetail> details = ProductDetailDAO.getInstance().selectByProductID(52);
         ArrayList<String> res = new ArrayList<>();
-        String totalDetail="";
-        Map<String,Integer> detailExhausteds = new HashMap<>();
-        for(ProductDetail detail : details) {
-            totalDetail+=detail.getColor()+"=="+detail.getRam()+"=="+detail.getRom()+"==";
-            if(detail.getQty()==0) {
-                if(detailExhausteds.containsKey(detail.getColor())) {
+        String totalDetail = "";
+        Map<String, Integer> detailExhausteds = new HashMap<>();
+        for (ProductDetail detail : details) {
+            totalDetail += detail.getColor() + "==" + detail.getRam() + "==" + detail.getRom() + "==";
+            if (detail.getQty() == 0) {
+                if (detailExhausteds.containsKey(detail.getColor())) {
                     int count = detailExhausteds.get(detail.getColor());
-                    detailExhausteds.replace(detail.getColor(), count+1);
+                    detailExhausteds.replace(detail.getColor(), count + 1);
                 } else {
-                    detailExhausteds.put(detail.getColor(),1);
+                    detailExhausteds.put(detail.getColor(), 1);
                 }
-                if(detailExhausteds.containsKey(detail.getRam()+"")) {
-                    int count = detailExhausteds.get(detail.getRam()+"");
-                    detailExhausteds.replace(detail.getRam()+"", count+1);
+                if (detailExhausteds.containsKey(detail.getRam() + "")) {
+                    int count = detailExhausteds.get(detail.getRam() + "");
+                    detailExhausteds.replace(detail.getRam() + "", count + 1);
                 } else {
-                    detailExhausteds.put(detail.getRam()+"",1);
+                    detailExhausteds.put(detail.getRam() + "", 1);
                 }
-                if(detailExhausteds.containsKey(detail.getRom()+"")) {
-                    int count = detailExhausteds.get(detail.getRom()+"");
-                    detailExhausteds.replace(detail.getRom()+"", count+1);
+                if (detailExhausteds.containsKey(detail.getRom() + "")) {
+                    int count = detailExhausteds.get(detail.getRom() + "");
+                    detailExhausteds.replace(detail.getRom() + "", count + 1);
                 } else {
-                    detailExhausteds.put(detail.getRom()+"",1);
+                    detailExhausteds.put(detail.getRom() + "", 1);
                 }
 
             }
         }
         String[] tokens = totalDetail.split("==");
 
-        for (Map.Entry<String,Integer> item : detailExhausteds.entrySet()) {
+        for (Map.Entry<String, Integer> item : detailExhausteds.entrySet()) {
             String key = item.getKey();
-            int count=0;
-            for(int i=0; i<tokens.length; i++) {
-                if(tokens[i].equals(key)) {
+            int count = 0;
+            for (int i = 0; i < tokens.length; i++) {
+                if (tokens[i].equals(key)) {
                     count++;
                 }
             }
-            if(item.getValue()==count) {
+            if (item.getValue() == count) {
                 res.add(key);
             }
         }
@@ -584,14 +594,14 @@ public class ProductUnit {
     }
 
     public boolean checkExhausted(String config) {
-        if(this.getExhaustedItems().contains(config)) {
+        if (this.getExhaustedItems().contains(config)) {
             return true;
         }
         return false;
     }
 
     public boolean isLocked() {
-        if(this.avai==Constant.LOCK) return true;
+        if (this.avai == Constant.LOCK) return true;
         else return false;
     }
 
@@ -618,7 +628,7 @@ public class ProductUnit {
 
     public static void main(String[] args) {
         String s = "4GB";
-        s=s.substring(0,s.indexOf("GB")).trim();
+        s = s.substring(0, s.indexOf("GB")).trim();
         System.out.println(Integer.parseInt(s));
 
 

@@ -552,9 +552,9 @@ h6 {
 
 .header-nav .profile {
     min-width: 240px;
-    padding-bottom: 0;
+    /*padding-bottom: 0;*/
     top: 30px !important;
-    right: 0 !important;
+    /*right: 0 !important;*/
 }
 
 .header-nav .profile .dropdown-header h6 {
@@ -608,11 +608,11 @@ h6 {
     background-color: #fff;
 }
 
-@media (max-width: 1199px) {
-    .sidebar {
-        left: -300px;
-    }
-}
+/*@media (max-width: 1199px) {*/
+/*    .sidebar {*/
+/*        left: -300px;*/
+/*    }*/
+/*}*/
 
 .sidebar::-webkit-scrollbar {
     width: 5px;

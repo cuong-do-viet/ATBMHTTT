@@ -41,11 +41,6 @@
         </dependency>
         
         <!-- thu vien tu them -->
-        <dependency>
-		    <groupId>jakarta.activation</groupId>
-		    <artifactId>jakarta.activation-api</artifactId>
-		    <version>2.1.2</version>
-		</dependency>
 		<dependency>
 		    <groupId>com.google.code.gson</groupId>
 		    <artifactId>gson</artifactId>
@@ -66,6 +61,11 @@
 		    <artifactId>jakarta.mail</artifactId>
 		    <version>2.0.1</version>
 		</dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
     </dependencies>
 

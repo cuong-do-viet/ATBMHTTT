@@ -56,6 +56,16 @@
 <%
     }
 %>
+
+<%
+    if(order == null){
+%>
+<p style="color: red;">Không có đơn hàng để hiển thị.</p>
+<%
+        return;
+    }
+%>
+
 <%@ include file="header.jsp" %>
 <div class="content-container">
     <h3 style="text-align: center">Lịch sử mua hàng</h3>

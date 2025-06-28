@@ -62,6 +62,29 @@ public class NotificationDAO {
             stmt.executeUpdate();
         }
     }
+
+    // Lấy tất cả thông báo chưa đọc (cho admin)
+    public List<Notification> getUnreadAdminNotifications() throws SQLException {
+        List<Notification> list = new ArrayList<>();
+        String sql = "SELECT * FROM notifications WHERE is_read = FALSE ORDER BY created_at DESC";
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Notification n = new Notification(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getString("username"),
+                        rs.getString("title"),
+                        rs.getString("message"),
+                        rs.getTimestamp("created_at"),
+                        rs.getBoolean("is_read")
+                );
+                list.add(n);
+            }
+        }
+        return list;
+    }
+
 }
 
 

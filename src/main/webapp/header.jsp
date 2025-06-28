@@ -417,6 +417,51 @@
                             }
                         </script>
                     </div>
+                    <!-- Báo mất khóa -->
+                    <div class="sub-content" id="lost-key-form" style="margin-left: 10px;width: 50%;margin-top: 0; display: none;" onclick="event.stopPropagation();">
+                        <form id="reportLostKeyForm">
+                            <input type="hidden" name="action" value="reportLostKey">
+                            <p class="bold-text-6 edit-title" style="text-align: center;color: var(--bold-color);">Báo mất khóa</p>
+
+                            <div class="form-group">
+                                <label for="reason">Lý do mất khóa</label>
+                                <textarea id="reason" name="reason" class="form-control" rows="4" placeholder="Nhập lý do bạn muốn báo mất khóa..." required></textarea>
+                            </div>
+
+                            <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
+                                <button class="btn btn-danger btn-edit" type="submit">Gửi</button>
+                            </div>
+                        </form>
+
+                        <script>
+                            document.querySelector("#reportLostKeyForm").addEventListener('submit', function(event) {
+                                event.preventDefault();
+                                const reason = document.getElementById("reason").value.trim();
+
+                                if (!reason) {
+                                    alert("Vui lòng nhập lý do báo mất khóa.");
+                                    return;
+                                }
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "notification",
+                                    data: {
+                                        action: "reportLostKey",
+                                        reason: reason
+                                    },
+                                    success: function(response) {
+                                        showSuccessToast("Đã gửi yêu cầu báo mất khóa", "#toast-header");
+                                        document.getElementById("reason").value = "";
+                                    },
+                                    error: function() {
+                                        showErrorToast("Lỗi khi gửi báo mất khóa", "#toast-header");
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+
 
                 </div>
 

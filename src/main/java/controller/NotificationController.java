@@ -121,10 +121,10 @@ public class NotificationController extends HttpServlet {
 
     private String escapeHtml(String text) {
         if (text == null) return "";
-        return text.replace("&", "&")
-                .replace("<", "<")
-                .replace(">", ">")
-                .replace("\"", "\"")
-                .replace("'", "'");
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }

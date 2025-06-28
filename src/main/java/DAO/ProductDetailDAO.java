@@ -140,7 +140,7 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
         int re=0;
         String ramCondition="";
         if(ram!=0) {
-            ramCondition="and ram = " + ram;
+            ramCondition=" and ram = " + ram;
         }
         try {
             Connection conn = JDBCUtil.getConnection();

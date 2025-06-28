@@ -26,6 +26,11 @@ public class AdminEmployeeController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if (userLogging == null) {
+            System.out.println("huh no userlog, better send them to login page i suppose");
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
 
         String action = req.getParameter("action");
         action = action.toUpperCase();

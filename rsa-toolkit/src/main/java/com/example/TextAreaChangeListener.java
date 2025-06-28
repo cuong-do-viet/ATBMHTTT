@@ -1,3 +1,5 @@
+package com.example;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -7,9 +9,9 @@ import java.beans.PropertyChangeListener;
 public class TextAreaChangeListener {
 
     private int lastChange = 0, lastNotifiedChange = 0;
-    private JTextArea textArea;
-    private DocumentListener documentListener;
-    private PropertyChangeListener propertyChangeListener;
+    private final JTextArea textArea;
+    private final DocumentListener documentListener;
+    private final PropertyChangeListener propertyChangeListener;
     private TextAreaChangeCallback changeCallback;
 
     public TextAreaChangeListener(JTextArea textArea) {

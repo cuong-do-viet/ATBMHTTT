@@ -10,9 +10,9 @@
     margin-left: auto;
 }
 
-#header ul {
-    display: block;
-}
+/*#header ul {*/
+/*    display: block;*/
+/*}*/
 
 .search-bar {
     border: 1px solid var(--blue-color);
@@ -100,12 +100,4 @@ tr:nth-child(odd) select {
 }
 
 
-/*header*/
-.dropdown-menu {
-    display: none !important;
-}
-
-.dropdown-menu.active {
-    display: block !important;
-}
 

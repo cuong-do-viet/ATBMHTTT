@@ -24,8 +24,13 @@ public class OrderController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if (userLogging == null) {
+            resp.sendRedirect("login.jsp"); // hoặc trang chính
+            return;
+        }
         String action = req.getParameter("action");
-        if(action==null) {
+        // default: idk
+        if(action == null) {
             ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitOfAndBy(userLogging.getId(), Constant.WAITING);
             req.setAttribute("orderUnits", orderUnits);
             req.setAttribute("status", Constant.WAITING);
@@ -39,6 +44,7 @@ public class OrderController extends HttpServlet {
         }
         action = action.toUpperCase();
         switch (action) {
+            // filter by status
             case "BYSTATUS": {
                 int status = Integer.parseInt(req.getParameter("status"));
                 ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitOfAndBy(userLogging.getId(), status);
@@ -52,6 +58,7 @@ public class OrderController extends HttpServlet {
                 rd.forward(req, resp);
                 break;
             }
+            // cancel an order
             case "CANCEL": {
                 int id = Integer.parseInt(req.getParameter("id"));
                 int re = OrderDAO.getInstance().updateStatus(id, Constant.CANCEL);
@@ -67,6 +74,7 @@ public class OrderController extends HttpServlet {
                 rd.forward(req, resp);
                 break;
             }
+            // get order detail
             case "DETAIL": {
                 int status = Integer.parseInt(req.getParameter("status"));
                 int id = Integer.parseInt(req.getParameter("id"));
@@ -83,11 +91,7 @@ public class OrderController extends HttpServlet {
                 rd.forward(req, resp);
                 break;
             }
-
         }
-
-
-
     }
 
     @Override

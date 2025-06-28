@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 @WebServlet("/payment")
 public class PaymentController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
@@ -29,8 +30,8 @@ public class PaymentController extends HttpServlet {
         User userLogging = (User) session.getAttribute("userLogging");
 
         String action = req.getParameter("action");
+        // default: back to cart xdx
         if(action == null || action.isEmpty()) {
-
             ArrayList<CartUnit> carts = CartUnitDAO.getInstance().selectByUserID(userLogging.getId());
             req.setAttribute("carts", carts);
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/cart.jsp");
@@ -38,6 +39,7 @@ public class PaymentController extends HttpServlet {
         } else {
             action = action.toUpperCase();
             switch(action) {
+                // i want to buy from cart
                 case "BUY" : {
                     System.out.println("buy: hello");
                     String[] idArr = req.getParameterValues("cart-check");
@@ -64,10 +66,11 @@ public class PaymentController extends HttpServlet {
                     rd.forward(req, resp);
                     break;
                 }
+                // i want to order from here
                 case "ORDER" : {
                     String[] idArr = req.getParameterValues("cart-id");
                     ArrayList<Integer> ids = new ArrayList<>();
-                    for(String id : idArr) {
+                    for (String id : idArr) {
                         ids.add(Integer.parseInt(id));
                     }
                     ArrayList<CartUnit> carts = CartUnitDAO.getInstance().selectByIDs(ids);
@@ -75,25 +78,20 @@ public class PaymentController extends HttpServlet {
                     String totalMoney = req.getParameter("total-money-input");
                     Order order = new Order(Double.parseDouble(totalMoney), userLogging.getId(), address);
                     int orderID = OrderDAO.getInstance().insert(order);
-                    int re = OrderDAO.getInstance().insertOrderDetail(orderID,carts);
+                    int re = OrderDAO.getInstance().insertOrderDetail(orderID, carts);
 //                  giam so luong trong kho
                     ProductDetailDAO.getInstance().updateSaledQty(carts);
 //                  xoa khoi gio hang
                     CartUnitDAO.getInstance().deleteOrderedCarts(ids);
-                    if(re!=0) {
+                    if (re != 0) {
                         RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
                         rd.forward(req, resp);
 
                     }
                     break;
                 }
-                
-
             }
-
         }
-
-
     }
 
     @Override

@@ -201,9 +201,9 @@ public class User {
     }
 
     public static String hashPassword(String password) {
-        HashAlgorism hashAlgorism = new HashAlgorism();
+        HashAlgorithm hashAlgorithm = new HashAlgorithm();
         try {
-            return hashAlgorism.hash(password);
+            return hashAlgorithm.hash(password);
         } catch (Exception e) {
             return "null";
         }

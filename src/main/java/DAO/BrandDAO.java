@@ -12,8 +12,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class BrandDAO implements IDAO<Brand>{
-    public static BrandDAO getInstance(){
-        return new BrandDAO();
+
+    private BrandDAO() {}
+
+    private static class LazyHolder {
+        private static final BrandDAO INSTANCE = new BrandDAO();
+    }
+    public static BrandDAO getInstance() {
+        return LazyHolder.INSTANCE;
     }
     @Override
     public int insert(Brand brand) {

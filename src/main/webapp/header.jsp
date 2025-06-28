@@ -46,8 +46,7 @@
 <div class="header pd10-20">
     <div id="toast-header" class="toast">
 
-    </div>
-
+    <%--Header supposed--%>
     <div class="header_top grid__row flex-roww">
         <a href="index" class="logo grid-col-2 pd0">
             <img src="./assets/img/logo/Logo-The-Gioi-Di-Dong-MWG-B-H.webp" alt="" style="color:black;">
@@ -65,7 +64,6 @@
                 <i class="bi bi-cart3"></i>
                 <p>Giỏ hàng</p>
             </div>
-
             <%
                 } else {
             %>
@@ -136,8 +134,10 @@
             </li>
         </ul>
     </div>
+
+    <%--Modal for what?--%>
     <div id="modal-container">
-        <!--   cap nhat so dia chi -->
+        <%--Address book update--%>
         <div class="modall address-modal" onclick="removeModal('#modal-container');">
             <div class="modall-content" style="width: 80%; background-color: unset;">
                 <div class="flex-roww" style="align-items: start;justify-content: space-between;height: 100%;">
@@ -422,14 +422,16 @@
 
             </div>
         </div>
-        <div class="modall login-require-modal" onclick="removeModal('#modal-container');">
+
+        <%--Require login modal--%>
+        <div class="modall login-require-modal">
             <div class="modall-content" style="width: 80%; background-color: unset;">
                 <div style="width: 100%; background-color: white;border-radius: 10px;padding: 20px;">
                     <div class="flex-roww" style="justify-content: center;margin:22px 0;font-size: 19px">
                         <p>Bạn chưa đăng nhập, vui lòng đăng nhập để sử dụng giỏ hàng</p>
                     </div>
                     <div class="flex-roww" style="justify-content: space-around; margin-top: 20px">
-                        <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('.modal-filter-details')"><i class="bi bi-x-lg"></i> Hủy</button>
+                        <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('#modal-container')"><i class="bi bi-x-lg"></i> Hủy</button>
                         <a href="login?action=require&pageAction=forward&page=cart" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
                     </div>
                 </div>

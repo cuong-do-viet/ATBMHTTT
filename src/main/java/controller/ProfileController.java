@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 @WebServlet("/profile")
 public class ProfileController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
@@ -30,6 +31,7 @@ public class ProfileController extends HttpServlet {
         String action = req.getParameter("action");
         action = action.toUpperCase();
         switch (action) {
+            // listing all address in the book
             case "ADDRESSBOOK" : {
                 ArrayList<Address> addresses = AddressDAO.getInstance().selectByUserID(userLogging.getId());
                 String html = renderAddressList(addresses);
@@ -38,6 +40,7 @@ public class ProfileController extends HttpServlet {
                 resp.getWriter().write(html);
                 break;
             }
+            // update address using address "id" and other fields
             case "UPDATEADDRESS" : {
                 int id = Integer.parseInt(req.getParameter("id"));
                 String receiver = req.getParameter("receiver");
@@ -57,6 +60,7 @@ public class ProfileController extends HttpServlet {
                 }
                 break;
             }
+            // delete address by address "id"
             case "DELETEADDRESS" : {
                 int id = Integer.parseInt(req.getParameter("id"));
                 Address a =new Address(id);
@@ -69,6 +73,7 @@ public class ProfileController extends HttpServlet {
                 }
                 break;
             }
+            // adding address to user
             case "ADDADDRESS" : {
                 int id = userLogging.getId();
                 String receiver = req.getParameter("receiver");
@@ -89,6 +94,7 @@ public class ProfileController extends HttpServlet {
                 }
                 break;
             }
+            // get user info
             case "INFO" : {
                 User user = UserDAO.getInstance().selectById(userLogging.getId());
                 System.out.println("info: user name:" + user.getName());
@@ -99,6 +105,7 @@ public class ProfileController extends HttpServlet {
                 resp.getWriter().write(userJson);
                 break;
             }
+            // update info
             case "UPDATEINFO" : {
                 String name = req.getParameter("name");
                 String email = req.getParameter("email");
@@ -122,6 +129,7 @@ public class ProfileController extends HttpServlet {
                 resp.getWriter().write(userJson);
                 break;
             }
+            // change password
             case "UPDATEPASSWORD" : {
                 String currentPassword = req.getParameter("currentPassword");
                 String password = req.getParameter("password");

@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * DO NOTHING APPARENTLY
+ */
 @WebServlet("/account")
 public class AccountController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doGet(req, resp);
-
     }
 
     @Override

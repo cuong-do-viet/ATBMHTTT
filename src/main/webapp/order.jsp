@@ -10,7 +10,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Thietbididong.com</title>
+    <title>Đơn hàng - Thietbididong.com</title>
     <%@ include file="header_import.jsp" %>
 
     <!-- css tu them   -->

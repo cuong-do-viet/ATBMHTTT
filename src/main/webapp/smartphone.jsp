@@ -3,6 +3,7 @@
 <html>
 <head>
     <%@ include file="header_import.jsp" %>
+    <title>Điện thoại? - Thietbididong.com</title>
 </head>
 <body>
 <%@ include file="header.jsp" %>

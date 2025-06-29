@@ -1,7 +1,7 @@
 <meta charset="UTF-8">
-<title>Thietbididong.com</title>
 
 <!-- Favicons -->
+<link rel="icon" href="./assets/img/icon/favicon.png" type="image/x-icon">
 
 <!-- Google Fonts -->
 <link href="https://fonts.gstatic.com" rel="preconnect">

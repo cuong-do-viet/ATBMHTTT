@@ -1,6 +1,8 @@
 package controller;
 
 import DAO.NotificationDAO;
+import JavaMail.IJavaMail;
+import JavaMail.JavaMailImpl;
 import model.Notification;
 import model.User;
 import jakarta.servlet.ServletException;

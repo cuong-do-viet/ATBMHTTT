@@ -45,6 +45,7 @@ public class LoginController extends HttpServlet {
                         resp.getWriter().write(html);
                     } else { // thanh cong
                         VerifyCode code = VerifyCodeDAO.getInstance().selectTheLastCodeOf(u.getEmail());
+                        System.out.println(code);
                         if (code != null && code.getIsVerify() == Constant.USED_CODE) {
                             System.out.println("login success");
                             String page = req.getParameter("page");

@@ -520,3 +520,11 @@
 .modal-login-require.active {
     display: block;
 }
+
+#lost-key-form {
+    display: none;
+}
+
+#lost-key-form.active {
+    display: block;
+}

@@ -262,9 +262,11 @@ function logout(event) {
 
 
 function showLostKeyForm() {
-    document.querySelector("#modal-container").style.display = "flex";
-    document.querySelectorAll(".sub-content").forEach(el => el.style.display = "none");``
-    document.querySelector("#lost-key-form").style.display = "block";
+    // document.querySelector("#modal-container").style.display = "flex";
+    // document.querySelectorAll(".sub-content").forEach(el => el.style.display = "none");``
+
+    document.querySelector('.info-modal').classList.add('active');
+    document.querySelector("#lost-key-form").classList.add('active');
 }
 
 

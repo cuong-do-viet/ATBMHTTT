@@ -1,6 +1,8 @@
 package controller;
 
 import DAO.*;
+import JavaMail.IJavaMail;
+import JavaMail.JavaMailImpl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -160,6 +162,10 @@ public class AdminCustomerController extends HttpServlet {
 
                 // code gui mat khau moi ve mail
                 String email  = user.getEmail();
+                // gui mail
+                IJavaMail mail = new JavaMailImpl();
+                mail.send(email, "Cấp mật khẩu mới",
+                        "Mật khẩu mới của bạn là : %s\nTUYỆT ĐỐI KHÔNG ĐƯỢC CHIA SẺ MÃ NÀY VỚI NGƯỜI KHÁC".formatted(newPassword));
 
                 if(re==1) {
                     String html = htmlSuccessToast("Cấp mật khẩu mới thành công!");
@@ -189,6 +195,9 @@ public class AdminCustomerController extends HttpServlet {
                 int id = UserDAO.getInstance().insert(user);
                 if(id!=0) {
                     // gui mail ve khach hang
+                    IJavaMail mail = new JavaMailImpl();
+                    mail.send(email, "Tạo tài khoản thành công",
+                            "Tài khoản mới đã được tạo với họ và tên là: %s\nMật khẩu là: %s".formatted(name, password));
 
                     System.out.println("add customer thanh cong");
                     RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminmenu?action=admincustomer&message=addSuccess_"+id);

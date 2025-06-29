@@ -61,7 +61,7 @@ function queryProduct(urlin, condition, orderby=1,offset=0,amount=20) {
             console.log("thanh cong: " + offset);
             if(offset!=0) {
                 console.log("!=0");
-                $('#product-list').html($('#product-list').html() + data);
+                $('#product-list').append(data);
             } else {
                 $('#product-list').html(data);
 

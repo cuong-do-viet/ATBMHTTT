@@ -120,7 +120,7 @@
                     </div>
                     <div class="flex-roww" style="justify-content: space-around; margin-top: 20px">
                         <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('.modal-filter-details')"><i class="bi bi-x-lg"></i> Hủy</button>
-                        <a href="product?action=FILTER" class="btn btn-primary btn-filter" style="color: white;"><i class="bi bi-check-lg"></i> Lọc</a>
+                        <button id="filterBtn" class="btn btn-primary btn-filter" style="color: white;"><i class="bi bi-check-lg"></i> Lọc</button>
 
                     </div>
                 </div>
@@ -129,14 +129,14 @@
         </div>
         <div class="sort-container flex-roww group">
             <p>Sắp xếp theo: </p>
-            <a href="product?action=SORT&orderby=1" data-value="1" class="sort-option active" onclick="changeCurrentPriceSort('default')">Nổi bật</a>
-            <a href="product?action=SORT&orderby=2" data-value="2" class="sort-option" onclick="changeCurrentPriceSort('default')">Mới</a>
+            <a href="product?action=FILTER&orderby=1" data-value="1" class="sort-option active" onclick="changeCurrentPriceSort('default')">Nổi bật</a>
+            <a href="product?action=FILTER&orderby=2" data-value="2" class="sort-option" onclick="changeCurrentPriceSort('default')">Mới</a>
             <div class="parent-option">
                 <p class="current-sort-price" style="color: var(--text-bold-color);margin: 0 10px;">Giá <i class="bi bi-chevron-down"></i></p>
                 <div class="sub-option flex-coll">
-                    <a href="product?action=SORT&orderby=4" data-value="4" class="sort-option" onclick="changeCurrentPriceSort('up')">Thấp đến cao <i class="bi bi-arrow-up-right"></i></a>
+                    <a href="product?action=FILTER&orderby=4" data-value="4" class="sort-option" onclick="changeCurrentPriceSort('up')">Thấp đến cao <i class="bi bi-arrow-up-right"></i></a>
                     <div class="seperate-horizontal-90"></div>
-                    <a href="product?action=SORT&orderby=5" data-value="5" class="sort-option" onclick="changeCurrentPriceSort('down')">Cao đến thấp <i class="bi bi-arrow-down-right"></i></a>
+                    <a href="product?action=FILTER&orderby=5" data-value="5" class="sort-option" onclick="changeCurrentPriceSort('down')">Cao đến thấp <i class="bi bi-arrow-down-right"></i></a>
                 </div>
             </div>
 
@@ -207,103 +207,101 @@
     <div class="flex-roww" style="margin: 10px 0;justify-content: center">
         <a class="btn btn-outline-primary more" onclick="moreProduct(event)">Xem thêm sản phẩm <i class="bi bi-chevron-down"></i></a>
     </div>
-    <script>
-
-    </script>
-    <script>
-        $('.carousel').carousel();
-        radioElements('.version-item');
-        radioElements('.sort-option');
-        radioElements('.btn-price-range');
-        checkElement('.group','.btn-os');
-
-        checkElement('.group', '.btn-brand');
-        const brandBtn = document.querySelectorAll('.btn-brand');
-        brandBtn.forEach((el) => {
-            el.addEventListener('click', (event) => {
-                event.preventDefault();
-                queryProductByBrands(event, '.btn-brand');
-            });
-        });
-
-        const filterBtn = document.querySelector('.btn-filter');
-        filterBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            console.log(filterBtn);
-            queryProductByFilters(event);
-        });
-        const btnCancelFilter = document.querySelector('.btn-cancel-filter');
-        btnCancelFilter.addEventListener('click', (event) => {
-            cancelFilter(event);
-        });
-
-
-        //sort
-
-        const btnSorts = document.querySelectorAll('.sort-option');
-        console.log(btnSorts.length);
-        btnSorts.forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                event.preventDefault();
-                const orderby = btn.getAttribute("data-value");
-                console.log("order by: " +orderby);
-                // const filterBrandContainer =  document.querySelector('.filter-brand');
-                const filterOptionContainer =  document.querySelector('.filter-options');
-                if(filterOptionContainer.classList.contains('active')) {
-                    event.currentTarget.href= "product?action=FILTER";
-                    queryProductByFilters(event,orderby);
-                } else {
-                    event.currentTarget.href= "product?action=BYBRAND";
-                    queryProductByBrands(event, '.btn-brand',orderby);
-                }
-            });
-        });
-
-        function changeCurrentPriceSort(newTitle) {
-            const temp = document.querySelector('.current-sort-price');
-            if (newTitle=='up') {
-                temp.innerHTML = 'Thấp đến cao <i class="bi bi-arrow-up-right"></i>';
-                temp.style.color = '#0b5ed7';
-            } else if(newTitle=='down') {
-                temp.innerHTML = 'Cao đến thấp <i class="bi bi-arrow-down-right"></i>';
-                temp.style.color = '#0b5ed7';
-            } else {
-                temp.innerHTML = 'Giá <i class="bi bi-chevron-down"></i>';
-                temp.style.color = 'var(--text-bold-color)';
-            }
-
-        }
-
-
-        // more product
-        function moreProduct(event) {
-            event.preventDefault();
-            var orderby = 1;
-            var offset = document.querySelectorAll('.product-item-container').length;
-            const orderbys = document.querySelectorAll(".sort-container .sort-option");
-            for(var orderbyE of orderbys) {
-                if(orderbyE.classList.contains("active")) {
-                    orderby = orderbyE.getAttribute("data-value");
-                    break;
-                }
-            }
-
-            const filterOptionContainer =  document.querySelector('.filter-options');
-            if(filterOptionContainer.classList.contains('active')) {
-                event.currentTarget.href= "product?action=FILTER";
-                queryProductByFilters(event,orderby,offset);
-            } else {
-                event.currentTarget.href= "product?action=BYBRAND";
-                queryProductByBrands(event, '.btn-brand',orderby,offset);
-            }
-        }
-
-
-    </script>
 </div>
 
 <%@ include file="footer.jsp" %>
 <script type="text/javascript" src="./assets/js/smartphone.js"></script>
 <script type="text/javascript" src="./assets/js/product.js"></script>
+<script>
+    $('.carousel').carousel();
+    radioElements('.version-item');
+    radioElements('.sort-option');
+    radioElements('.btn-price-range');
+    checkElement('.group','.btn-os');
+
+    checkElement('.group', '.btn-brand');
+    const brandBtn = document.querySelectorAll('.btn-brand');
+    brandBtn.forEach((el) => {
+        el.addEventListener('click', (event) => {
+            event.preventDefault();
+            queryProductByBrands(event, '.btn-brand');
+        });
+    });
+
+    const filterBtn = document.getElementById('filterBtn');
+    console.log(filterBtn);
+    filterBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        console.log("Yipee")
+        event.currentTarget.href= "product?action=FILTER";
+        queryProductByFilters(event);
+    });
+    const btnCancelFilter = document.querySelector('.btn-cancel-filter');
+    btnCancelFilter.addEventListener('click', (event) => {
+        cancelFilter(event);
+    });
+
+
+    //sort
+    const btnSorts = document.querySelectorAll('.sort-option');
+    console.log(btnSorts.length);
+    btnSorts.forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+            event.preventDefault();
+            const orderby = btn.getAttribute("data-value");
+            console.log("order by: " +orderby);
+            // const filterBrandContainer =  document.querySelector('.filter-brand');
+            const filterOptionContainer =  document.querySelector('.filter-options');
+            if(filterOptionContainer.classList.contains('active')) {
+                event.currentTarget.href= "product?action=FILTER";
+                queryProductByFilters(event,orderby);
+            } else {
+                event.currentTarget.href= "product?action=BYBRAND";
+                queryProductByBrands(event, '.btn-brand',orderby);
+            }
+        });
+    });
+
+    function changeCurrentPriceSort(newTitle) {
+        const temp = document.querySelector('.current-sort-price');
+        if (newTitle=='up') {
+            temp.innerHTML = 'Thấp đến cao <i class="bi bi-arrow-up-right"></i>';
+            temp.style.color = '#0b5ed7';
+        } else if(newTitle=='down') {
+            temp.innerHTML = 'Cao đến thấp <i class="bi bi-arrow-down-right"></i>';
+            temp.style.color = '#0b5ed7';
+        } else {
+            temp.innerHTML = 'Giá <i class="bi bi-chevron-down"></i>';
+            temp.style.color = 'var(--text-bold-color)';
+        }
+
+    }
+
+
+    // more product
+    function moreProduct(event) {
+        event.preventDefault();
+        var orderby = 1;
+        var offset = document.querySelectorAll('.product-item-container').length;
+        const orderbys = document.querySelectorAll(".sort-container .sort-option");
+        for(var orderbyE of orderbys) {
+            if(orderbyE.classList.contains("active")) {
+                orderby = orderbyE.getAttribute("data-value");
+                break;
+            }
+        }
+
+        const filterOptionContainer =  document.querySelector('.filter-options');
+        if(filterOptionContainer.classList.contains('active')) {
+            event.currentTarget.href= "product?action=FILTER";
+            queryProductByFilters(event,orderby,offset);
+        } else {
+            event.currentTarget.href= "product?action=BYBRAND";
+            queryProductByBrands(event, '.btn-brand',orderby,offset);
+        }
+    }
+
+
+</script>
 </body>
 </html>

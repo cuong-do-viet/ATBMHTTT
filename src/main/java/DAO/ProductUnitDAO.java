@@ -57,7 +57,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "p.avai as avai\n" +
                     "from products p join productdetails d on p.id = d.productID and d.deleted = 0\n" +
                     "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
-                    "where p.id=?\n and p.deleted = 0" +
+                    "where p.id=?\n and p.deleted = 0\n" +
                     "group by p.id\n";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, pid);
@@ -446,7 +446,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "\tleft join comments c on c.objectID = p.id and c.deleted = 0\n" +
                     "    left join saleprograms s on s.objectID = p.id  and s.main=1 and s.deleted = 0\n" +
                     osCondition + "\n  and p.deleted = 0" +
-                    "group by p.id\n" +
+                    " group by p.id\n" +
                     "order by p.prominence desc\n" +
                     "limit ?,?";
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -1235,9 +1235,9 @@ public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<
         ArrayList<ProductUnit> res = new ArrayList<>();
         String idsCondition="(";
         for(Integer i : ids) {
-            idsCondition+=i+",";
+            idsCondition += i+",";
         }
-        idsCondition=idsCondition.substring(0, idsCondition.length()-1);
+        idsCondition = idsCondition.substring(0, idsCondition.length()-1);
         idsCondition+=")";
 
         try {
@@ -1251,10 +1251,10 @@ public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<
                     "p.avai as avai\n" +
                     "from products p join productdetails d on p.id = d.productID\n" +
                     "\tleft join comments c on c.objectID = p.id\n" +
-                    "where de.id in " + idsCondition +
+                    "where d.id in " + idsCondition +
                     " group by p.id\n";
             PreparedStatement pst = conn.prepareStatement(sql);
-//            System.out.println(pst);
+            System.out.println("huh ::" + pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
                 int id = rs.getInt("id");

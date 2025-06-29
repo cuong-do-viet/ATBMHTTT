@@ -141,7 +141,7 @@
 
     <script>
         const paymentForm = document.querySelector('#paymentForm');
-        paymentForm.addEventListener('click', function (event) {
+        paymentForm.addEventListener('submit', function (event) {
             event.preventDefault();
             console.log("submit payment");
             const addressInput = this.querySelector('input[name="address-input"]');

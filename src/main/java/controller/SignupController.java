@@ -2,6 +2,8 @@ package controller;
 
 import DAO.UserDAO;
 import DAO.VerifyCodeDAO;
+import JavaMail.IJavaMail;
+import JavaMail.JavaMailImpl;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -55,7 +57,10 @@ public class SignupController extends HttpServlet {
                             // khoi tao otp va insert vao database
                             VerifyCode verifyCode = new VerifyCode(email);
                             String code = VerifyCodeDAO.getInstance().insertNewCode(verifyCode);
-                            // hien tai dang bi loi phan gui mail
+                            // gui mail
+                            IJavaMail mail = new JavaMailImpl();
+                            mail.send(email, "Xác thực tài khoản đăng kí",
+                                    "Mã OTP của bạn là : %s\nTUYỆT ĐỐI KHÔNG ĐƯỢC CHIA SẺ MÃ NÀY VỚI NGƯỜI KHÁC".formatted(code));
                             String html = renderHtml(email);
                             resp.getWriter().write(html);
                         } else {

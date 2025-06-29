@@ -109,6 +109,9 @@
                         <a href="profile?action=info" class="li-profile" onclick="manageProfile(event);">Quản lý</a>
                     </li>
                     <li>
+                        <a href="profile?action=lostKey" class="li-lostkey" onclick="manageLostKey(event);">Báo mất khóa</a>
+                    </li>
+                    <li>
                         <a href="login?action=logout" onclick="logout(event);" class="li-logout">Đăng xuất</a>
                     </li>
                 </ul>
@@ -452,7 +455,6 @@
                                     },
                                     success: function(response) {
                                         showSuccessToast("Đã gửi yêu cầu báo mất khóa", "#toast-header");
-                                        document.getElementById("reason").value = "";
                                     },
                                     error: function() {
                                         showErrorToast("Lỗi khi gửi báo mất khóa", "#toast-header");
@@ -460,6 +462,8 @@
                                 });
                             });
                         </script>
+
+
                     </div>
 
 

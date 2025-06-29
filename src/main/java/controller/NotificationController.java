@@ -46,8 +46,42 @@ public class NotificationController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
+        HttpSession session = req.getSession();
+        User userLogging = (User) session.getAttribute("userLogging");
+
+        if (userLogging == null) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("{\"success\": false, \"error\": \"Bạn chưa đăng nhập.\"}");
+            return;
+        }
+        handleReportLostKey(req, resp, userLogging);
     }
+
+
+    private void handleReportLostKey(HttpServletRequest req, HttpServletResponse resp, User user) throws IOException {
+        String reason = req.getParameter("reason");
+
+        String adminEmail = "huynguyen7013@gmail.com";
+        String subject = "Yêu cầu báo mất khóa từ " + user.getName();
+        String content = "Người dùng: " + user.getName() + "\n"
+                + "Email: " + user.getEmail() + "\n"
+                + "Lý do báo mất khóa:\n" + reason;
+
+        IJavaMail mailService = new JavaMailImpl();
+
+        boolean sent = mailService.send(adminEmail, subject, content);
+
+        if (sent) {
+            resp.getWriter().write("{\"success\": true}");
+        } else {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"success\": false, \"error\": \"Lỗi khi gửi email.\"}");
+        }
+    }
+
 
     private void handleGetNotifications(HttpServletRequest req, HttpServletResponse resp, User user) throws IOException {
         try {

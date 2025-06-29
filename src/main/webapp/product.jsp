@@ -11,7 +11,7 @@
         String category = (String) request.getAttribute("category");
         if(category==null) category="Điện thoại";
     %>
-    <title>Thietbididong.com - <%=category%></title>
+    <title><%=category%> - Thietbididong.com</title>
     <!-- css tu them   -->
     <link href="./assets/css/smartphone.css" rel="stylesheet">
 

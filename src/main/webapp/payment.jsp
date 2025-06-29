@@ -8,6 +8,7 @@
 <html>
 <head>
     <%@ include file="header_import.jsp" %>
+    <title>Thanh toán - Thietbididong.com</title>
 </head>
 <body>
 <jsp:include page="header.jsp" />

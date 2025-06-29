@@ -11,6 +11,7 @@ import java.io.IOException;
 /**
  * ANOTHER CASE OF DO NOTHING
  */
+
 @WebServlet("/menu")
 public class MenuController extends HttpServlet {
     @Override

@@ -6,6 +6,7 @@
 <html>
 <head>
     <%@ include file="header_import.jsp" %>
+    <title>Thietbididong.com</title>
 </head>
 <body>
 <%@ include file="header.jsp" %>

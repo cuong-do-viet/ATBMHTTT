@@ -1,11 +1,20 @@
 package DAO;
+
 import model.PublicKey;
 import service.JDBCUtil;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class PublicKeyDAO implements IDAO<PublicKey> {
+
+    private static final String encryptKey = "fGVuF4z4/tRgpeAFy6UcTw=="; // 16 ký tự = 128-bit key (có thể thay từ nơi khác)
 
     private static PublicKeyDAO instance;
 
@@ -17,42 +26,56 @@ public class PublicKeyDAO implements IDAO<PublicKey> {
         return instance;
     }
 
-    // Kết nối cơ sở dữ liệu
     private Connection getConnection() throws SQLException {
         return JDBCUtil.getConnection();
     }
 
-    // Insert public key
+    // Encrypt content using AES
+    private String encrypt(String plainText) throws Exception {
+        Key aesKey = new SecretKeySpec(encryptKey.getBytes(StandardCharsets.UTF_8), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+        byte[] encrypted = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
+
+    // Decrypt content using AES
+    private String decrypt(String encryptedText) throws Exception {
+        Key aesKey = new SecretKeySpec(encryptKey.getBytes(StandardCharsets.UTF_8), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, aesKey);
+        byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
+        return new String(decrypted, StandardCharsets.UTF_8);
+    }
+
     @Override
     public int insert(PublicKey publicKey) {
         String sql = "INSERT INTO publickeys (user_id, content) VALUES (?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, publicKey.getUserId());
-            stmt.setString(2, publicKey.getContent());
+            stmt.setString(2, encrypt(publicKey.getContent()));
             return stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
     }
 
-    // Update public key
     @Override
     public int update(PublicKey publicKey) {
         String sql = "UPDATE publickeys SET content = ? WHERE user_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, publicKey.getContent());
+            stmt.setString(1, encrypt(publicKey.getContent()));
             stmt.setInt(2, publicKey.getUserId());
             return stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
     }
 
-    // Delete public key by userId
     @Override
     public int delete(PublicKey publicKey) {
         String sql = "DELETE FROM publickeys WHERE user_id = ?";
@@ -66,7 +89,6 @@ public class PublicKeyDAO implements IDAO<PublicKey> {
         }
     }
 
-    // Get all public keys
     @Override
     public ArrayList<PublicKey> selectAll() {
         ArrayList<PublicKey> publicKeys = new ArrayList<>();
@@ -77,37 +99,42 @@ public class PublicKeyDAO implements IDAO<PublicKey> {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 int userId = rs.getInt("user_id");
-                String content = rs.getString("content");
-                PublicKey publicKey = new PublicKey(userId, content);
+                String encryptedContent = rs.getString("content");
+                String decryptedContent = decrypt(encryptedContent);
+                PublicKey publicKey = new PublicKey(userId, decryptedContent);
                 publicKey.setId(id);
                 publicKeys.add(publicKey);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return publicKeys;
     }
 
-    // Get public key by userId
     @Override
-    public PublicKey selectById(int id) {
-        String sql = "SELECT * FROM publickeys WHERE user_id = ?";
+    public PublicKey selectById(int userId) {
+        String sql = "SELECT * FROM publickeys WHERE user_id = ? AND deleted = 0";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
+
+            stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                int userId = rs.getInt("user_id");
-                String content = rs.getString("content");
-                return new PublicKey(userId, content);
+                String encryptedContent = rs.getString("content");
+                String decryptedContent = decrypt(encryptedContent);
+                int id = rs.getInt("id");
+
+                return new PublicKey(id, decryptedContent);
             }
-        } catch (SQLException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
-    // Xóa public key của user theo userId
     public void deleteByUserId(int userId) {
         String sql = "DELETE FROM publickeys WHERE user_id = ?";
         try (Connection conn = getConnection();
@@ -124,15 +151,14 @@ public class PublicKeyDAO implements IDAO<PublicKey> {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            stmt.setString(2, publicKeyStr);
+            stmt.setString(2, encrypt(publicKeyStr));
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public int updateOrInsert(int userId, String publicKeyStr) {
-        // Kiểm tra xem user đã có public key trong bảng chưa
         String selectSql = "SELECT * FROM publickeys WHERE user_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(selectSql)) {
@@ -140,26 +166,24 @@ public class PublicKeyDAO implements IDAO<PublicKey> {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Nếu đã có, thực hiện update
                 String updateSql = "UPDATE publickeys SET content = ? WHERE user_id = ?";
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-                    updateStmt.setString(1, publicKeyStr);
+                    updateStmt.setString(1, encrypt(publicKeyStr));
+                    System.out.println(selectById(20));
                     updateStmt.setInt(2, userId);
                     return updateStmt.executeUpdate();
                 }
             } else {
-                // Nếu chưa có, thực hiện insert mới
                 String insertSql = "INSERT INTO publickeys (user_id, content) VALUES (?, ?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                     insertStmt.setInt(1, userId);
-                    insertStmt.setString(2, publicKeyStr);
+                    insertStmt.setString(2, encrypt(publicKeyStr));
                     return insertStmt.executeUpdate();
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
     }
-
 }

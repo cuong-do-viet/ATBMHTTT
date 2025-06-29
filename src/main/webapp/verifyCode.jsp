@@ -3,7 +3,7 @@
 <html>
 <head>
     <%@ include file="header_import.jsp" %>
-    <title>Xác thực tài khoản</title>
+    <title>Xác thực tài khoản - Thietbididong.com</title>
 
     <!-- css tu them   -->
     <link href="./assets/css/forgetPassword.css" rel="stylesheet">

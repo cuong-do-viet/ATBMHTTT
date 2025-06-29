@@ -14,15 +14,15 @@ public class KeyService {
     private final IJavaMail mailService;
 
     public KeyService() {
-        this.mailService = new JavaMailImpl(); // Hoặc inject qua constructor
+        this.mailService = new JavaMailImpl();
     }
 
     public void generateKeyAndSend(int id) {
         try {
-            // get User from userId
+            // Get User by userId
             User user = UserDAO.getInstance().selectById(id);
 
-            // create a key pair
+            // Generate RSA Key Pair
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
             KeyPair keyPair = keyGen.generateKeyPair();
@@ -30,18 +30,20 @@ public class KeyService {
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
 
-            // Encode Base64
+            // Encode to Base64
             String publicKeyStr = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-            String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+            String privateKeyBase64 = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 
-            // send mail
+            // Format private key to PEM style
+            String formattedPrivateKey = formatPrivateKeyPem(privateKeyBase64);
+
+            // Send mail
             String subject = "Your New Private Key";
-            String message = "Here is your new private key:\n\n" +
-                    privateKeyStr + "\n\nKeep it safe and do not share it.";
+            String message = "Here is your new private key:\n\n" + formattedPrivateKey + "\n\nKeep it safe and do not share it.";
             boolean mailSent = mailService.send(user.getEmail(), subject, message);
 
             if (mailSent) {
-                // save public key to DB
+                // Save public key to DB
                 PublicKeyDAO.getInstance().updateOrInsert(id, publicKeyStr);
                 System.out.println("Public key saved for userId: " + id);
             } else {
@@ -51,5 +53,18 @@ public class KeyService {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    private String formatPrivateKeyPem(String base64Key) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("-----BEGIN PRIVATE KEY-----\n");
+        int index = 0;
+        while (index < base64Key.length()) {
+            int endIndex = Math.min(index + 64, base64Key.length());
+            sb.append(base64Key, index, endIndex).append("\n");
+            index = endIndex;
+        }
+        sb.append("-----END PRIVATE KEY-----");
+        return sb.toString();
     }
 }

@@ -1,13 +1,50 @@
 <%@ page import="model.User" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Thietbididong.com</title>
+
+    <!-- thu vien jquery   -->
+    <script type="text/javascript" src="./assets/js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="./assets/js/js_bootstrap4/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./assets/js/header.js"></script>
+    <script type="text/javascript" src="./assets/js/login.js"></script>
+    <script type="text/javascript" src="./assets/js/smartphone.js"></script>
+    <script type="text/javascript" src="./assets/js/toast.js"></script>
+
+    <!-- Favicons -->
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!--icon-->
+    <link rel="stylesheet" href="./assets/fonts/fontawesome-free-6.4.0-web/css/all.min.css">
+    <link rel="stylesheet" href="./assets/fonts/fonts-bootstrap/bootstrap-icons.min.css">
+
+    <!-- Template Main CSS File -->
+    <link rel="stylesheet" href="./assets/css/css_bootstrap4/bootstrap.min.css">
+
+    <link href="./assets/css/base.css" rel="stylesheet">
+    <link href="./assets/css/header.css" rel="stylesheet">
+    <link href="./assets/css/toast.css" rel="stylesheet">
+
+    <!-- css tu them   -->
+    <link href="./assets/css/smartphone.css" rel="stylesheet">
+    <link href="./assets/css/index.css" rel="stylesheet">
+    <link href="./assets/css/login.css" rel="stylesheet">
+
+</head>
+<body>
 <%
     User userLogging = (User) session.getAttribute("userLogging");
 //    userLogging = new User(1,"Minh Nhat","minhnhat@gmail.com");
 %>
 
 <div class="header pd10-20">
-
-    <%--Toast container--%>
-    <div id="toast-header" class="toast"></div>
+    <div id="toast-header" class="toast">
 
     <%--Header supposed--%>
     <div class="header_top grid__row flex-roww">
@@ -43,6 +80,15 @@
                 // }
             </script>
 
+            <!-- Thông báo -->
+            <div class="notification flex-roww" onclick="toggleNotificationPanel(event)">
+                <span class="notification-count" id="notification-count"></span>
+                <i class="bi bi-bell"></i>
+                <p> Thông báo</p>
+            </div>
+
+
+
             <div class="user flex-roww">
                 <i class="bi bi-person"></i>
             <% if(userLogging==null) {
@@ -61,6 +107,9 @@
                     </li>
                     <li>
                         <a href="profile?action=info" class="li-profile" onclick="manageProfile(event);">Quản lý</a>
+                    </li>
+                    <li>
+                        <a href="profile?action=lostKey" class="li-lostkey" onclick="manageLostKey(event);">Báo mất khóa</a>
                     </li>
                     <li>
                         <a href="login?action=logout" onclick="logout(event);" class="li-logout">Đăng xuất</a>
@@ -177,7 +226,7 @@
             </div>
         </div>
 
-        <%--User info modal--%>
+
         <div class="modall info-modal" onclick="removeModal('#modal-container');">
             <div class="modall-content" style="width: 80%; background-color: unset;top: 35%;">
                 <div class="flex-roww" style="align-items: start;justify-content: center;height: 100%;">
@@ -371,6 +420,52 @@
                             }
                         </script>
                     </div>
+                    <!-- Báo mất khóa -->
+                    <div class="sub-content" id="lost-key-form" style="margin-left: 10px;width: 50%;margin-top: 0; display: none;" onclick="event.stopPropagation();">
+                        <form id="reportLostKeyForm">
+                            <input type="hidden" name="action" value="reportLostKey">
+                            <p class="bold-text-6 edit-title" style="text-align: center;color: var(--bold-color);">Báo mất khóa</p>
+
+                            <div class="form-group">
+                                <label for="reason">Lý do mất khóa</label>
+                                <textarea id="reason" name="reason" class="form-control" rows="4" placeholder="Nhập lý do bạn muốn báo mất khóa..." required></textarea>
+                            </div>
+
+                            <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
+                                <button class="btn btn-danger btn-edit" type="submit">Gửi</button>
+                            </div>
+                        </form>
+
+                        <script>
+                            document.querySelector("#reportLostKeyForm").addEventListener('submit', function(event) {
+                                event.preventDefault();
+                                const reason = document.getElementById("reason").value.trim();
+
+                                if (!reason) {
+                                    alert("Vui lòng nhập lý do báo mất khóa.");
+                                    return;
+                                }
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "notification",
+                                    data: {
+                                        action: "reportLostKey",
+                                        reason: reason
+                                    },
+                                    success: function(response) {
+                                        showSuccessToast("Đã gửi yêu cầu báo mất khóa", "#toast-header");
+                                    },
+                                    error: function() {
+                                        showErrorToast("Lỗi khi gửi báo mất khóa", "#toast-header");
+                                    }
+                                });
+                            });
+                        </script>
+
+
+                    </div>
+
 
                 </div>
 
@@ -389,10 +484,29 @@
                         <a href="login?action=require&pageAction=forward&page=cart" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+        <div class="modall notification-modal" onclick="removeModal('#modal-container');">
+            <div class="modall-content" style="width: 60%; background-color: unset; top: 20%;">
+                <div class="sub-content" onclick="event.stopPropagation();" style="background-color: white; border-radius: 10px; padding: 20px;">
+                    <div class="flex-roww" style="justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">Thông báo</h3>
+                        <button onclick="closeNotificationModal(event)" class="btn" style="border: none; background: none; font-size: 20px; cursor: pointer;">×</button>
+                    </div>
+                    <div id="notification-container">
+                        <!-- Loading... -->
+                        <div style="text-align: center; padding: 20px;">
+                            <p>Đang tải thông báo...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <%--Header response?--%>
+    </div>
     <div id="header-response"></div>
 </div>
+
+</body>
+</html>

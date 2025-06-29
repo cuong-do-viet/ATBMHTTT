@@ -13,33 +13,42 @@
     right: 0;
     padding: 10px 20px;
     background-color: var(--primary-bg-color);
-    z-index: 1;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
 }
 
-.header_top .logo img{
+.header_top .logo img {
+    height: 44px;
     width: 100%;
 }
 
 .search-bar {
-    margin-left: 10px;
+    margin-left: 20px;
+    flex-grow: 1;
+    max-width: 400px;
 }
 
 .user_part {
     margin-left: auto;
-    justify-content: space-between;
+    justify-content: flex-end;
+    white-space: nowrap;
 }
 
+
 .user,
-.cart {
+.cart,
+.notification {
     text-decoration: none;
     color: black;
-    width: fit-content;
     padding: 7px;
-
+    position: relative;
 }
 
 .user:hover,
-.cart:hover {
+.cart:hover,
+.notification:hover{
     cursor: pointer;
     background-color: var(--hover-color);
     border-radius: 25px;
@@ -48,8 +57,163 @@
 }
 
 .user p,
-.cart p {
+.cart p,
+.notification p{
     margin-left: 5px;
+}
+
+.notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: none;
+    text-align: center;
+    line-height: 12px;
+    z-index: 10;
+}
+
+.notification-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.notification-modal.active {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+    z-index: 2000;
+}
+
+.notification-modal .modall-content {
+    background-color: white;
+    border-radius: 10px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-top: 0 !important;
+    top: 0 !important;
+    position: relative;
+    width: 60%;
+}
+#modal-container .modall {
+    z-index: 2000;
+}
+
+#modal-container .modall-content {
+    z-index: 2001;
+}
+
+.notification-item {
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    margin-bottom: 2px;
+}
+
+.notification-item:hover {
+    background-color: #f0f0f0 !important;
+}
+
+.notification-item.unread {
+    background-color: #e3f2fd;
+    border-left: 3px solid #007bff;
+}
+
+.notification-item.read {
+    background-color: #f8f9fa;
+}
+
+.notification-modal h3 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.notification-modal .btn {
+    transition: all 0.3s ease;
+}
+
+.notification-modal .btn:hover {
+    transform: scale(1.1);
+    color: #dc3545;
+}
+
+.notification-item:only-child p {
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .notification-modal .modall-content {
+        width: 95% !important;
+        margin: 10px;
+        max-height: 80vh;
+    }
+
+    .notification-item {
+        padding: 12px !important;
+    }
+
+    .notification-item h6 {
+        font-size: 14px !important;
+    }
+
+    .notification-item p {
+        font-size: 13px !important;
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-5px);
+    }
+    60% {
+        transform: translateY(-3px);
+    }
+}
+
+.notification-count.new {
+    animation: bounce 1s;
+}
+
+.notification-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+}
+
+.notification-modal.active {
+    display: flex !important;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    z-index: 2000;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
 }
 
 .user p a {
@@ -356,4 +520,3 @@
 .modal-login-require.active {
     display: block;
 }
-

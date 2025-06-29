@@ -101,12 +101,27 @@ public class ProductController extends HttpServlet {
                 }
                 break;
             }
-            // filter by order and offset?
+            // filter by order
             case "FILTER": {
                 System.out.println("filter");
                 String condition = req.getParameter("condition");
-                int orderBy = Integer.parseInt(req.getParameter("orderby"));
-                int offset = Integer.parseInt(req.getParameter("offset"));
+
+                String orderByString = req.getParameter("orderby");
+                String offsetString = req.getParameter("offset");
+
+                int orderBy = 0;
+                try {
+                    orderBy = Integer.parseInt(orderByString);
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("order by set to 0");
+                }
+                int offset = 0;
+                try {
+                    offset = Integer.parseInt(offsetString);
+                } catch (NumberFormatException e) {
+                    System.out.println("offset set to 0");
+                }
                 if (condition == null) {
                     System.out.println("condition is null");
                 } else {

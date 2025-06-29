@@ -4,6 +4,8 @@ import DAO.BrandDAO;
 import DAO.ImageDAO;
 import DAO.ProductUnitDAO;
 import DAO.UserDAO;
+import JavaMail.IJavaMail;
+import JavaMail.JavaMailImpl;
 import com.google.gson.*;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -217,6 +219,10 @@ public class AdminEmployeeController extends HttpServlet {
                 id=UserDAO.getInstance().updateRoles(id,"[\""+null+"\",\""+null+"\",\""+null+"\",\""+null+"\"]");
                 if(id!=0) {
                     // gui mail ve tai khoan
+
+                    IJavaMail mail = new JavaMailImpl();
+                    mail.send(email, "Nhân viên chính thức",
+                            "Tài khoản của bạn đã được nâng cấp lên Nhân viên");
 
                     System.out.println("add customer thanh cong");
                     String message= "Thêm tài khoản nhân viên thành công";

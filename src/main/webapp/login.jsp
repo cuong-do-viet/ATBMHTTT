@@ -3,6 +3,7 @@
 <html>
 <head>
     <%@ include file="header_import.jsp" %>
+    <title>Đăng nhập - Thietbididong.com</title>
 </head>
 <body>
 <jsp:include page="header.jsp" />

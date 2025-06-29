@@ -9,7 +9,7 @@
     <%
         ProductUnit pu = (ProductUnit) request.getAttribute("pu");
     %>
-    <title><%=pu.getFullName()%></title>
+    <title><%=pu.getFullName()%> - Thietbididong.com</title>
 
     <!-- css tu them   -->
     <link href="./assets/css/productDetail.css" rel="stylesheet">

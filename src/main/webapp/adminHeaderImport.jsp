@@ -1,9 +1,9 @@
 <meta charset="utf-8">
-<title>Quản lý - ThietBiDiDong</title>
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <meta content="" name="description">
 <meta content="" name="keywords">
 
+<link rel="icon" href="./assets/img/icon/favicon.png" type="image/x-icon">
 
 <!-- Google Fonts -->
 <link href="https://fonts.gstatic.com" rel="preconnect">

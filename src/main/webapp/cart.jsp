@@ -6,6 +6,7 @@
 <html>
 <head>
     <%@ include file="header_import.jsp" %>
+    <title>Giỏ hàng - Thietbididong.com</title>
     <!-- css tu them   -->
     <link href="./assets/css/cart.css" rel="stylesheet">
 </head>

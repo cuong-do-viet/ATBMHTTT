@@ -37,7 +37,9 @@
                     <p class="note">Mã sẽ hết hạn trong vòng 5 phút</p>
                 </div>
                 <form action="verify" id="otp-form" style="width: 100%;margin-top: 15px;">
-                    <input type="text" name="action" value="<%=action%>" hidden>
+                    <input type="text" name="action" value="VERIFY" hidden>
+                    <input type="text" id="emailInput" name="email" value="<%=email%>" hidden>
+                    <input id="codeInput" type="text" name="code" value="" hidden>
                     <div id="OTP_Div" class="group">
                         <input autofocus class="form-control otp-input empty" onkeyup="alter_box(event)" maxlength="1"  required type="number" id="o1" />
                         <input class="form-control otp-input empty" required maxlength="1" type="number" id="o2" onkeyup="alter_box(event)" />
@@ -66,12 +68,14 @@
             </div>
         </div>
     </div>
-    <script>
-        countdown(10,'#countdown','#btn-resend');
-    </script>
 
 </div>
 <%@ include file="footer.jsp" %>
 <script type="text/javascript" src="./assets/js/forgetPassword.js"></script>
+<script type="text/javascript" src="./assets/js/verifyCode.js"></script>
+<script>
+    countdown(10,'#countdown','#btn-resend');
+</script>
+<div id="verifyCode-response"></div>
 </body>
 </html>

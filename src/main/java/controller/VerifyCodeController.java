@@ -1,6 +1,8 @@
 package controller;
 
 import DAO.VerifyCodeDAO;
+import JavaMail.IJavaMail;
+import JavaMail.JavaMailImpl;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,8 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Constant;
+import model.VerifyCode;
 
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Verify code for email verification??
@@ -45,10 +49,24 @@ public class VerifyCodeController extends HttpServlet {
                     rd.forward(req, resp);
                     break;
                 }
+                // this is just for sending?
+                case "RESEND": {
+                    System.out.println("verify code resend");
+                    // gui mail
+                    VerifyCode vcode = VerifyCodeDAO.getInstance().selectTheLastCodeOf(email);
+                    VerifyCodeDAO.getInstance().disableCode(vcode.getCode());
+                    String code = VerifyCodeDAO.getInstance().insertNewCode(new VerifyCode(email));
+                    IJavaMail mail = new JavaMailImpl();
+                    mail.send(email, "Xác thực tài khoản đăng kí",
+                            "Mã OTP của bạn là : %s\nTUYỆT ĐỐI KHÔNG ĐƯỢC CHIA SẺ MÃ NÀY VỚI NGƯỜI KHÁC".formatted(code));
+                    String html = renderHtml(email);
+                    resp.getWriter().write(html);
+                    break;
+                }
                 // time to actually verify
                 case "VERIFY" : {
                     System.out.println("verifying code");
-                    email = "2003tonhat@gmail.com"; //test
+//                    email = "2003tonhat@gmail.com"; //test
                     String code = req.getParameter("code");
                     int re=VerifyCodeDAO.getInstance().verifyCode(code,email);
                     if(re== Constant.EXPIRED_CODE) {// code het han

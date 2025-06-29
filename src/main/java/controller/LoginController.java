@@ -1,6 +1,7 @@
 package controller;
 
 import DAO.UserDAO;
+import DAO.VerifyCodeDAO;
 import com.mysql.cj.Session;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -9,7 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Constant;
 import model.User;
+import model.VerifyCode;
 
 import java.io.IOException;
 
@@ -41,17 +44,25 @@ public class LoginController extends HttpServlet {
                         String html = renderHtml("WRONGPASSWORD","");
                         resp.getWriter().write(html);
                     } else { // thanh cong
-                        System.out.println("login success");
-                        String page = req.getParameter("page");
-                        String html;
-                        session.setAttribute("userLogging",u);
-                        System.out.println("page: " + page);
-                        html = renderHtml("SUCCESS",page);
-                        if(u.getRoles() != null && u.getRoles().length > 0) { //admin
-                            System.out.println("confirm admin");
-                            html = callFunction("forward(\"adminmenu?action=init\");");
+                        VerifyCode code = VerifyCodeDAO.getInstance().selectTheLastCodeOf(u.getEmail());
+                        if (code != null && code.getIsVerify() == Constant.USED_CODE) {
+                            System.out.println("login success");
+                            String page = req.getParameter("page");
+                            String html;
+                            session.setAttribute("userLogging",u);
+                            System.out.println("page: " + page);
+                            html = renderHtml("SUCCESS",page);
+                            if(u.getRoles() != null && u.getRoles().length > 0) { //admin
+                                System.out.println("confirm admin");
+                                html = callFunction("forward(\"adminmenu?action=init\");");
+                            }
+                            resp.getWriter().write(html);
                         }
-                        resp.getWriter().write(html);
+                        else {
+                            System.out.println("login failed, your email is not verified");
+                            String html = renderHtml("SUCCESS",req.getContextPath()+"/verify?email="+email+"&action=SIGNUP");
+                            resp.getWriter().write(html);
+                        }
                     }
                     break;
                 }

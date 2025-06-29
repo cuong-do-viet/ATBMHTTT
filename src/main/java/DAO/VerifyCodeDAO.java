@@ -26,7 +26,7 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
         int re = 0;
         Random rand = new Random();
         String code = "";
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             code += String.valueOf(rand.nextInt(9) + 1);
         }
         verifyCode.setCode(code);
@@ -50,7 +50,7 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
         int re = 0;
         Random rand = new Random();
         String code = "";
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             code += String.valueOf(rand.nextInt(9) + 1);
         }
         verifyCode.setCode(code);

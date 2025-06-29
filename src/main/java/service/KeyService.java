@@ -44,7 +44,7 @@ public class KeyService {
 
             if (mailSent) {
                 // Save public key to DB
-                PublicKeyDAO.getInstance().updateOrInsert(id, publicKeyStr);
+                PublicKeyDAO.getInstance().insertNewKey(id, publicKeyStr);
                 System.out.println("Public key saved for userId: " + id);
             } else {
                 System.out.println("Failed to send email. Key not saved.");

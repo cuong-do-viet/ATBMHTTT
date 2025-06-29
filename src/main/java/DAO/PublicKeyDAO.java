@@ -112,20 +112,26 @@ public class PublicKeyDAO implements IDAO<PublicKey> {
     }
 
     @Override
-    public PublicKey selectById(int id) {
-        String sql = "SELECT * FROM publickeys WHERE user_id = ?";
+    public PublicKey selectById(int userId) {
+        String sql = "SELECT * FROM publickeys WHERE user_id = ? AND deleted = 0";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
+
+            stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 String encryptedContent = rs.getString("content");
                 String decryptedContent = decrypt(encryptedContent);
+                int id = rs.getInt("id");
+
                 return new PublicKey(id, decryptedContent);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
